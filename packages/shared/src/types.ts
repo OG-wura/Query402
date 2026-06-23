@@ -1,6 +1,7 @@
 export type QueryMode = "search" | "news" | "scrape";
 export type ProviderCategory = QueryMode;
 export type SourceType = "mock" | "real";
+export type PaymentSource = "sponsored" | "wallet" | "demo";
 
 export interface ProviderDefinition {
   id: string;
@@ -48,6 +49,10 @@ export interface UsageEvent {
   traceId: string;
   createdAt: string;
   latencyMs: number;
+  sponsorshipGrantId?: string;
+  policyDecision?: string;
+  paymentSource?: PaymentSource;
+  sponsorPublicKey?: string;
 }
 
 export interface PaymentAttempt {
@@ -63,6 +68,10 @@ export interface PaymentAttempt {
   transactionHash?: string;
   error?: string;
   createdAt: string;
+  sponsorshipGrantId?: string;
+  policyDecision?: string;
+  paymentSource?: PaymentSource;
+  sponsorPublicKey?: string;
 }
 
 export interface AnalyticsSummary {

@@ -1,7 +1,8 @@
 import { Router, type Response } from "express";
-import { signedGrantSchema, type SignedGrant } from "@query402/shared";
+import { signedGrantSchema, type QueryResult, type SignedGrant } from "@query402/shared";
 import { z } from "zod";
 import { runPaidRequest } from "../lib/demo-client.js";
+import { persistSponsoredPayment } from "../lib/persistence.js";
 import {
   checkAndReserveBudget,
   commitBudget,
@@ -168,6 +169,25 @@ paidRouter.post("/api/paid/run", async (req, res, next) => {
     }
 
     commitBudget();
+
+    const payload = output.payload as {
+      result?: QueryResult;
+    };
+    const result = payload.result;
+
+    persistSponsoredPayment({
+      mode: parsed.data.mode,
+      endpoint: output.endpoint,
+      provider: parsed.data.provider,
+      queryOrUrl: parsed.data.mode === "scrape" ? parsed.data.url! : parsed.data.query!,
+      priceUsd: quotedPriceUsd,
+      latencyMs: result?.latencyMs ?? 0,
+      traceId: result?.traceId ?? `trace_sponsored_${grant.grantId}`,
+      paymentResponseHeader: output.paymentResponseHeader,
+      walletPublicKey: grant.wallet,
+      sponsorshipGrantId: grant.grantId,
+      policyDecision: policy.decision
+    });
 
     if (idempotencyKey) {
       try {
