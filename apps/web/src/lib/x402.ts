@@ -7,54 +7,16 @@ import type { PaidQueryResponse } from "../types.js";
 
 const stellarRpcUrl = import.meta.env.VITE_STELLAR_RPC_URL ?? "https://soroban-testnet.stellar.org";
 
-function extractFreighterErrorMessage(error: unknown) {
-  if (!error) {
-    return "Freighter wallet error";
-  }
-
-  if (typeof error === "string") {
-    return error;
-  }
-
-  if (typeof error === "object" && "message" in error && typeof error.message === "string") {
-    return error.message;
-  }
-
-  return JSON.stringify(error);
-}
-
-function createFreighterSigner(address: string): ClientStellarSigner {
+function createMachineSigner(wallet: import("./wallet/index.js").WalletSessionMachine): ClientStellarSigner {
   return {
-    address,
+    address: wallet.getState().address!,
     signAuthEntry: async (authEntryXdr, opts) => {
-      const result = await signAuthEntry(authEntryXdr, {
-        networkPassphrase: opts?.networkPassphrase,
-        address
-      });
-
-      if (result.error || !result.signedAuthEntry) {
-        throw new Error(extractFreighterErrorMessage(result.error));
-      }
-
-      return {
-        signedAuthEntry: result.signedAuthEntry,
-        signerAddress: result.signerAddress
-      };
+      const res = await wallet.signAuthEntry(authEntryXdr, opts);
+      return res;
     },
     signTransaction: async (transactionXdr, opts) => {
-      const result = await signTransaction(transactionXdr, {
-        networkPassphrase: opts?.networkPassphrase,
-        address
-      });
-
-      if (result.error || !result.signedTxXdr) {
-        throw new Error(extractFreighterErrorMessage(result.error));
-      }
-
-      return {
-        signedTxXdr: result.signedTxXdr,
-        signerAddress: result.signerAddress
-      };
+      const res = await wallet.signTransaction(transactionXdr, opts);
+      return res;
     }
   };
 }
@@ -65,7 +27,7 @@ export async function runWalletPaidQuery(input: {
   provider: string;
   query?: string;
   url?: string;
-  walletAddress: string;
+  wallet: import("./wallet/index.js").WalletSessionMachine;
 }): Promise<PaidQueryResponse> {
   const params = new URLSearchParams({ provider: input.provider });
 
@@ -83,7 +45,7 @@ export async function runWalletPaidQuery(input: {
 
   const endpoint = `${input.apiBaseUrl}/x402/${input.mode}?${params.toString()}`;
 
-  const signer = createFreighterSigner(input.walletAddress);
+  const signer = createMachineSigner(input.wallet);
   const client = new x402Client().register("stellar:*", new ExactStellarScheme(signer, { url: stellarRpcUrl }));
   const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
