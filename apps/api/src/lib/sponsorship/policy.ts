@@ -2,7 +2,10 @@ import type { QueryMode, SignedGrant } from "@query402/shared";
 import { signedGrantSchema } from "@query402/shared";
 import { config } from "../config.js";
 import { getProviderById } from "../pricing.js";
+import { isNonceConsumed, wouldExceedBudget } from "./budget.js";
 import { verifyGrant } from "./grant.js";
+import { getCachedIdempotencyResponse } from "./idempotency.js";
+import { isSponsorshipStorageAvailable } from "./store.js";
 
 export type PolicyDecision =
   | "allowed"
@@ -54,27 +57,68 @@ function deny(
   };
 }
 
-/** Stub until SQLite store lands in phase 5. */
-export function isSponsorshipStorageAvailable(): boolean {
-  return true;
+/** Re-export for route handlers. */
+export { isSponsorshipStorageAvailable } from "./store.js";
+
+function checkNonceNotConsumed(nonce: string, grantId: string): PolicyResult | null {
+  try {
+    if (isNonceConsumed(nonce)) {
+      return deny("denied_nonce_replay", 409, "nonce_replay", { grantId });
+    }
+
+    return null;
+  } catch {
+    return deny("denied_storage_unavailable", 503, "sponsorship_storage_unavailable");
+  }
 }
 
-/** Stub until nonce table is wired in phase 5. */
-function checkNonceNotConsumed(_nonce: string, _grantId: string): PolicyResult | null {
-  return null;
+function checkBudget(wallet: string, amountUsd: number, grantId: string): PolicyResult | null {
+  try {
+    const exceeded = wouldExceedBudget(wallet, amountUsd);
+
+    if (exceeded) {
+      return deny("denied_budget_exceeded", 429, `${exceeded}_budget_exceeded`, { grantId });
+    }
+
+    return null;
+  } catch {
+    return deny("denied_storage_unavailable", 503, "sponsorship_storage_unavailable");
+  }
 }
 
-/** Stub until budget store is wired in phase 5. */
-function checkBudget(_wallet: string, _amountUsd: number): PolicyResult | null {
-  return null;
-}
-
-/** Stub until idempotency store is wired in phase 5. */
 function checkIdempotency(
-  _idempotencyKey: string | undefined,
-  _requestHash: string
+  idempotencyKey: string | undefined,
+  requestHash: string,
+  grantId: string
 ): PolicyResult | null {
-  return null;
+  if (!idempotencyKey) {
+    return null;
+  }
+
+  try {
+    const cached = getCachedIdempotencyResponse(idempotencyKey, requestHash);
+
+    if (cached.hit) {
+      return {
+        allowed: true,
+        statusCode: cached.statusCode,
+        decision: "idempotency_hit",
+        grantId,
+        cachedResponse: {
+          statusCode: cached.statusCode,
+          body: cached.body
+        }
+      };
+    }
+
+    if (cached.conflict) {
+      return deny("denied_invalid_grant", 409, "idempotency_key_conflict", { grantId });
+    }
+
+    return null;
+  } catch {
+    return deny("denied_storage_unavailable", 503, "sponsorship_storage_unavailable");
+  }
 }
 
 function buildRequestHash(input: AuthorizeSponsoredRunInput): string {
@@ -140,12 +184,16 @@ export function authorizeSponsoredRun(input: AuthorizeSponsoredRunInput): Policy
     return nonceResult;
   }
 
-  const budgetResult = checkBudget(grant.wallet, provider.priceUsd);
+  const budgetResult = checkBudget(grant.wallet, provider.priceUsd, grant.grantId);
   if (budgetResult) {
     return budgetResult;
   }
 
-  const idempotencyResult = checkIdempotency(input.idempotencyKey, buildRequestHash(input));
+  const idempotencyResult = checkIdempotency(
+    input.idempotencyKey,
+    buildRequestHash(input),
+    grant.grantId
+  );
   if (idempotencyResult) {
     return idempotencyResult;
   }

@@ -6,4 +6,5 @@ dist
 coverage
 *.log
 apps/api/data/*.json
+apps/api/data/*.db
 docs/ISSUE-9-AGENT-HANDOFF.md

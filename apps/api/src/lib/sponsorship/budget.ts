@@ -1,0 +1,147 @@
+import type Database from "better-sqlite3";
+import { config } from "../config.js";
+import { getSponsorshipDb, runInTransaction } from "./store.js";
+
+export class SponsorshipNonceReplayError extends Error {
+  readonly name = "SponsorshipNonceReplayError";
+}
+
+export class SponsorshipBudgetExceededError extends Error {
+  readonly name = "SponsorshipBudgetExceededError";
+
+  constructor(public readonly scope: "wallet" | "global") {
+    super(`budget exceeded: ${scope}`);
+  }
+}
+
+export function getDailyWindowStart(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+function readSpentUsd(
+  database: Database.Database,
+  scope: "global" | "wallet",
+  wallet: string | null,
+  windowStart: string
+): number {
+  const row = database
+    .prepare(
+      `SELECT spent_usd
+       FROM sponsorship_budgets
+       WHERE scope = ? AND wallet IS ? AND window_start = ?`
+    )
+    .get(scope, wallet, windowStart) as { spent_usd: number } | undefined;
+
+  return row?.spent_usd ?? 0;
+}
+
+function incrementBudget(
+  database: Database.Database,
+  scope: "global" | "wallet",
+  wallet: string | null,
+  windowStart: string,
+  amountUsd: number
+): void {
+  database
+    .prepare(
+      `INSERT INTO sponsorship_budgets (scope, wallet, spent_usd, window_start)
+       VALUES (?, ?, ?, ?)
+       ON CONFLICT(scope, wallet, window_start)
+       DO UPDATE SET spent_usd = spent_usd + excluded.spent_usd`
+    )
+    .run(scope, wallet, amountUsd, windowStart);
+}
+
+function decrementBudget(
+  database: Database.Database,
+  scope: "global" | "wallet",
+  wallet: string | null,
+  windowStart: string,
+  amountUsd: number
+): void {
+  database
+    .prepare(
+      `UPDATE sponsorship_budgets
+       SET spent_usd = MAX(0, spent_usd - ?)
+       WHERE scope = ? AND wallet IS ? AND window_start = ?`
+    )
+    .run(amountUsd, scope, wallet, windowStart);
+}
+
+export function isNonceConsumed(nonce: string): boolean {
+  const database = getSponsorshipDb();
+  const row = database.prepare(`SELECT 1 AS found FROM sponsorship_nonces WHERE nonce = ?`).get(nonce);
+  return Boolean(row);
+}
+
+export function wouldExceedBudget(
+  wallet: string,
+  amountUsd: number,
+  windowStart = getDailyWindowStart()
+): "wallet" | "global" | null {
+  const database = getSponsorshipDb();
+  const walletSpent = readSpentUsd(database, "wallet", wallet, windowStart);
+
+  if (walletSpent + amountUsd > config.SPONSORSHIP_PER_WALLET_DAILY_BUDGET_USD) {
+    return "wallet";
+  }
+
+  const globalSpent = readSpentUsd(database, "global", null, windowStart);
+
+  if (globalSpent + amountUsd > config.SPONSORSHIP_GLOBAL_DAILY_BUDGET_USD) {
+    return "global";
+  }
+
+  return null;
+}
+
+export function checkAndReserveBudget(input: {
+  wallet: string;
+  amountUsd: number;
+  nonce: string;
+  grantId: string;
+}): void {
+  runInTransaction((database) => {
+    const windowStart = getDailyWindowStart();
+    const consumedAt = new Date().toISOString();
+
+    const existingNonce = database
+      .prepare(`SELECT 1 AS found FROM sponsorship_nonces WHERE nonce = ?`)
+      .get(input.nonce);
+
+    if (existingNonce) {
+      throw new SponsorshipNonceReplayError();
+    }
+
+    const walletSpent = readSpentUsd(database, "wallet", input.wallet, windowStart);
+    if (walletSpent + input.amountUsd > config.SPONSORSHIP_PER_WALLET_DAILY_BUDGET_USD) {
+      throw new SponsorshipBudgetExceededError("wallet");
+    }
+
+    const globalSpent = readSpentUsd(database, "global", null, windowStart);
+    if (globalSpent + input.amountUsd > config.SPONSORSHIP_GLOBAL_DAILY_BUDGET_USD) {
+      throw new SponsorshipBudgetExceededError("global");
+    }
+
+    database
+      .prepare(
+        `INSERT INTO sponsorship_nonces (nonce, grant_id, consumed_at)
+         VALUES (?, ?, ?)`
+      )
+      .run(input.nonce, input.grantId, consumedAt);
+
+    incrementBudget(database, "wallet", input.wallet, windowStart, input.amountUsd);
+    incrementBudget(database, "global", null, windowStart, input.amountUsd);
+  });
+}
+
+/** Reservation is finalized inside checkAndReserveBudget. */
+export function commitBudget(): void {}
+
+export function releaseBudget(wallet: string, amountUsd: number): void {
+  runInTransaction((database) => {
+    const windowStart = getDailyWindowStart();
+    decrementBudget(database, "wallet", wallet, windowStart, amountUsd);
+    decrementBudget(database, "global", null, windowStart, amountUsd);
+  });
+}
