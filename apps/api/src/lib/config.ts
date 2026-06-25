@@ -51,7 +51,8 @@ const envSchema = z.object({
   SPONSORSHIP_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
   SPONSORSHIP_GRANT_TTL_SECONDS: z.coerce.number().int().positive().default(300),
   SPONSORSHIP_CHALLENGE_TTL_SECONDS: z.coerce.number().int().positive().default(60),
-  SPONSORSHIP_DB_PATH: z.string().min(1).default("apps/api/data/sponsorship.db")
+  SPONSORSHIP_DB_PATH: z.string().min(1).default("apps/api/data/sponsorship.db"),
+  IDEMPOTENCY_TTL_SECONDS: z.coerce.number().int().positive().default(86_400)
 });
 
 const parsed = envSchema.safeParse(process.env);
