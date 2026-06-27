@@ -48,7 +48,7 @@ Reusing `Idempotency-Key` with a **different fingerprint** → `409 idempotency_
 
 ## Payment proof dedup
 
-The same `payment-response` / transaction hash cannot settle multiple responses. A second request with the same on-chain proof returns the cached response without re-executing the provider.
+Settled x402 payments are deduplicated by on-chain `transactionHash` from typed payment evidence. Demo payments use a stable demo proof key. A replay with the same proof returns the cached response without re-executing the provider.
 
 ## Configuration
 

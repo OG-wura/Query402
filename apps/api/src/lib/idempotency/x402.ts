@@ -71,14 +71,6 @@ export async function handlePaidX402Route(
       return res.status(400).json({ error: "unknown_provider" });
     }
 
-    const proofKey = paymentProofKey(req);
-    if (proofKey) {
-      const existing = getResponseByPaymentProof(proofKey);
-      if (existing) {
-        return res.status(200).json(existing);
-      }
-    }
-
     const evidence = getPaymentEvidence(req);
     const fingerprint = {
       method: "GET" as const,
@@ -95,6 +87,14 @@ export async function handlePaidX402Route(
     const gate = beginIdempotency(req, fingerprint);
     if (respondIdempotencyGate(res, gate)) {
       return;
+    }
+
+    const proofKey = paymentProofKey(req);
+    if (proofKey) {
+      const existing = getResponseByPaymentProof(proofKey);
+      if (existing) {
+        return res.status(200).json(existing);
+      }
     }
 
     const result = await input.execute();
