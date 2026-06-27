@@ -54,7 +54,10 @@ function buildPrompt(mode: QueryMode, query: string): string {
   ].join("\n");
 }
 
-export async function fetchGroqItems(mode: QueryMode, query: string): Promise<ProviderResultItem[] | null> {
+export async function fetchGroqItems(
+  mode: QueryMode,
+  query: string
+): Promise<ProviderResultItem[] | null> {
   if (!config.GROQ_API_KEY) {
     return null;
   }

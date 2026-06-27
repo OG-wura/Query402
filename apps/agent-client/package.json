@@ -13,8 +13,9 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "lint": "echo 'No lint configured for agent-client'",
-    "format": "echo 'No format task configured for agent-client'"
+    "lint": "eslint src",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src"
   },
   "dependencies": {
     "@query402/shared": "0.1.0",

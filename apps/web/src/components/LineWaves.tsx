@@ -180,7 +180,9 @@ export default function LineWaves({
       fragment: fragmentShader,
       uniforms: {
         uTime: { value: 0 },
-        uResolution: { value: [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height] },
+        uResolution: {
+          value: [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height]
+        },
         uSpeed: { value: speed },
         uInnerLines: { value: innerLineCount },
         uOuterLines: { value: outerLineCount },
@@ -207,7 +209,10 @@ export default function LineWaves({
 
     function handleMouseMove(event: MouseEvent) {
       const rect = gl.canvas.getBoundingClientRect();
-      targetMouse = [(event.clientX - rect.left) / rect.width, 1 - (event.clientY - rect.top) / rect.height];
+      targetMouse = [
+        (event.clientX - rect.left) / rect.width,
+        1 - (event.clientY - rect.top) / rect.height
+      ];
     }
 
     function handleMouseLeave() {
@@ -216,7 +221,11 @@ export default function LineWaves({
 
     function resize() {
       renderer.setSize(container.offsetWidth, container.offsetHeight);
-      program.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height];
+      program.uniforms.uResolution.value = [
+        gl.canvas.width,
+        gl.canvas.height,
+        gl.canvas.width / gl.canvas.height
+      ];
     }
 
     window.addEventListener("resize", resize);

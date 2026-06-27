@@ -4,7 +4,18 @@
 
 :root {
   color-scheme: dark;
-  font-family: "Söhne", "Inter", "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    "Söhne",
+    "Inter",
+    "IBM Plex Sans",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 * {
@@ -515,7 +526,10 @@ body {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: transform 180ms ease, color 180ms ease, background 180ms ease;
+  transition:
+    transform 180ms ease,
+    color 180ms ease,
+    background 180ms ease;
 }
 
 .mode-btn:hover {
@@ -638,7 +652,9 @@ body {
   text-align: left;
   background: linear-gradient(150deg, rgba(13, 18, 29, 0.9), rgba(9, 13, 21, 0.82));
   cursor: pointer;
-  transition: transform 180ms ease, border-color 180ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
   animation: cardIn 430ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
@@ -649,7 +665,9 @@ body {
 
 .provider-card.selected {
   border-color: rgba(98, 228, 255, 0.58);
-  box-shadow: 0 0 0 1px rgba(98, 228, 255, 0.35), 0 10px 28px rgba(31, 146, 175, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(98, 228, 255, 0.35),
+    0 10px 28px rgba(31, 146, 175, 0.2);
 }
 
 .provider-name {
@@ -716,7 +734,9 @@ body {
   color: #0f1321;
   font-weight: 700;
   background: linear-gradient(135deg, #6fe8ff, #b67fff);
-  transition: transform 170ms ease, filter 170ms ease;
+  transition:
+    transform 170ms ease,
+    filter 170ms ease;
 }
 
 .run-btn:hover:not(:disabled) {
@@ -794,7 +814,9 @@ body {
   background: rgba(10, 14, 24, 0.86);
   border-radius: 10px;
   padding: 0.56rem 0.65rem;
-  font-family: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family:
+    "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
   font-size: 0.73rem;
   color: #9bc4ff;
 }
@@ -943,7 +965,9 @@ body {
   border-radius: 10px;
   padding: 0.45rem 0.5rem;
   background: rgba(13, 18, 30, 0.7);
-  transition: border-color 170ms ease, transform 170ms ease;
+  transition:
+    border-color 170ms ease,
+    transform 170ms ease;
 }
 
 .feed-row:hover {
@@ -980,7 +1004,9 @@ body {
   white-space: pre-wrap;
   word-break: break-word;
   color: #8bc7ff;
-  font-family: "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family:
+    "IBM Plex Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", monospace;
   font-size: 0.72rem;
   line-height: 1.5;
 }
@@ -1166,7 +1192,10 @@ body {
   align-items: center;
   gap: 0.42rem;
   border-radius: 12px;
-  transition: transform 170ms ease, border-color 170ms ease, background 170ms ease;
+  transition:
+    transform 170ms ease,
+    border-color 170ms ease,
+    background 170ms ease;
 }
 
 .lp-chip {
@@ -1282,7 +1311,12 @@ body {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle, rgba(188, 107, 255, 0.2), rgba(72, 219, 255, 0.08) 60%, transparent 72%);
+  background: radial-gradient(
+    circle,
+    rgba(188, 107, 255, 0.2),
+    rgba(72, 219, 255, 0.08) 60%,
+    transparent 72%
+  );
 }
 
 .lp-halo img {
@@ -1637,7 +1671,12 @@ body {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle, rgba(188, 104, 255, 0.22), rgba(86, 226, 255, 0.1) 62%, transparent 73%);
+  background: radial-gradient(
+    circle,
+    rgba(188, 104, 255, 0.22),
+    rgba(86, 226, 255, 0.1) 62%,
+    transparent 73%
+  );
 }
 
 .lpx-hero-glow img {

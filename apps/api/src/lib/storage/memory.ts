@@ -1,8 +1,5 @@
 import type { AnalyticsSummary, PaymentAttempt, UsageEvent } from "@query402/shared";
-import {
-  MAX_PAYMENT_ATTEMPTS,
-  MAX_USAGE_EVENTS
-} from "./constants.js";
+import { MAX_PAYMENT_ATTEMPTS, MAX_USAGE_EVENTS } from "./constants.js";
 import { buildAnalyticsSummary } from "./serialization.js";
 import type {
   AnalyticsQueryOptions,
@@ -163,7 +160,9 @@ export class InMemoryStorageRepository implements StorageRepository {
   async getCachedIdempotencyResponse(
     key: string,
     requestHash: string
-  ): Promise<{ hit: true; statusCode: number; body: unknown } | { hit: false; conflict?: boolean }> {
+  ): Promise<
+    { hit: true; statusCode: number; body: unknown } | { hit: false; conflict?: boolean }
+  > {
     return this.enqueue(() => {
       this.purgeExpiredIdempotency(key);
       const record = this.idempotency.get(key);

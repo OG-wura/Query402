@@ -1,10 +1,6 @@
 import type Database from "better-sqlite3";
 import type { AnalyticsSummary, PaymentAttempt, UsageEvent } from "@query402/shared";
-import {
-  DEFAULT_RECENT_LIMIT,
-  MAX_PAYMENT_ATTEMPTS,
-  MAX_USAGE_EVENTS
-} from "../constants.js";
+import { DEFAULT_RECENT_LIMIT, MAX_PAYMENT_ATTEMPTS, MAX_USAGE_EVENTS } from "../constants.js";
 import {
   buildAnalyticsSummary,
   paymentAttemptToRow,
@@ -308,7 +304,9 @@ export class SqliteStorageRepository implements StorageRepository {
   async getCachedIdempotencyResponse(
     key: string,
     requestHash: string
-  ): Promise<{ hit: true; statusCode: number; body: unknown } | { hit: false; conflict?: boolean }> {
+  ): Promise<
+    { hit: true; statusCode: number; body: unknown } | { hit: false; conflict?: boolean }
+  > {
     return defer(() => {
       const database = getAnalyticsDb(this.dbPath);
       const row = database

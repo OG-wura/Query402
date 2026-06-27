@@ -54,9 +54,7 @@ export function issueGrant(wallet: string): SignedGrant {
     wallet,
     network: config.STELLAR_NETWORK,
     maxAmountUsd: config.SPONSORSHIP_PER_WALLET_DAILY_BUDGET_USD,
-    expiresAt: new Date(
-      now.getTime() + config.SPONSORSHIP_GRANT_TTL_SECONDS * 1000
-    ).toISOString(),
+    expiresAt: new Date(now.getTime() + config.SPONSORSHIP_GRANT_TTL_SECONDS * 1000).toISOString(),
     nonce: randomUUID(),
     issuedAt: now.toISOString()
   };

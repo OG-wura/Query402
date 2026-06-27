@@ -1,8 +1,18 @@
 import { nanoid } from "nanoid";
-import type { AnalyticsSummary, PaymentAttempt, PaymentSource, QueryMode, UsageEvent } from "@query402/shared";
+import type {
+  AnalyticsSummary,
+  PaymentAttempt,
+  PaymentSource,
+  QueryMode,
+  UsageEvent
+} from "@query402/shared";
 import { config } from "./config.js";
 import { getStorageRepository } from "./storage/index.js";
-import type { AnalyticsQueryOptions, PaginationOptions, PaymentUsagePair } from "./storage/types.js";
+import type {
+  AnalyticsQueryOptions,
+  PaginationOptions,
+  PaymentUsagePair
+} from "./storage/types.js";
 
 export interface PersistPaidRequestInput {
   mode: QueryMode;
@@ -91,7 +101,9 @@ export async function getPaymentAttempts(options?: PaginationOptions): Promise<P
   return getStorageRepository().getPaymentAttempts(options);
 }
 
-export async function getAnalyticsSummary(options?: AnalyticsQueryOptions): Promise<AnalyticsSummary> {
+export async function getAnalyticsSummary(
+  options?: AnalyticsQueryOptions
+): Promise<AnalyticsSummary> {
   return getStorageRepository().getAnalyticsSummary(options);
 }
 

@@ -45,11 +45,14 @@ export async function runSponsoredPaidQuery(input: {
   url?: string;
   walletAddress: string;
 }): Promise<PaidQueryResponse> {
-  const challenge = await fetchJson<SponsorshipChallenge>(`${input.apiBaseUrl}/api/sponsorship/challenge`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ wallet: input.walletAddress })
-  });
+  const challenge = await fetchJson<SponsorshipChallenge>(
+    `${input.apiBaseUrl}/api/sponsorship/challenge`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ wallet: input.walletAddress })
+    }
+  );
 
   const signResult = await signMessage(challenge.message, { address: input.walletAddress });
   if (signResult.error || !signResult.signedMessage) {

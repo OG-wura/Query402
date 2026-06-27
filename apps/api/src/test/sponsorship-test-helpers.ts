@@ -57,7 +57,9 @@ export function buildGrant(overrides: Partial<SponsorshipGrant> = {}): Sponsorsh
   };
 }
 
-export async function createSignedGrant(overrides: Partial<SponsorshipGrant> = {}): Promise<SignedGrant> {
+export async function createSignedGrant(
+  overrides: Partial<SponsorshipGrant> = {}
+): Promise<SignedGrant> {
   const grantModule = await import("../lib/sponsorship/grant.js");
   return grantModule.signGrant(buildGrant(overrides));
 }

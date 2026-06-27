@@ -4,9 +4,7 @@ import { config } from "../lib/config.js";
 import { createChallenge, verifyAndConsumeChallenge } from "../lib/sponsorship/challenge.js";
 import { issueGrant } from "../lib/sponsorship/grant.js";
 
-const stellarPublicKeySchema = z
-  .string()
-  .regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
+const stellarPublicKeySchema = z.string().regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
 
 const challengeRequestSchema = z.object({
   wallet: stellarPublicKeySchema

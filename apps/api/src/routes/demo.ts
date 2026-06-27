@@ -20,9 +20,7 @@ import {
 } from "../lib/sponsorship/budget.js";
 import { authorizeSponsoredRun } from "../lib/sponsorship/policy.js";
 
-const stellarPublicKeySchema = z
-  .string()
-  .regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
+const stellarPublicKeySchema = z.string().regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
 
 const paidRunSchema = z
   .object({

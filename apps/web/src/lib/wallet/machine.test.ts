@@ -8,9 +8,9 @@ class FakeAdapter implements WalletAdapter {
   name = "Fake Wallet";
   capabilities = {
     canSignTransaction: true,
-    canSignAuthEntry: true,
+    canSignAuthEntry: true
   };
-  
+
   mockState: WalletState = { status: "disconnected" };
   mockRejectSign = false;
 
@@ -20,11 +20,15 @@ class FakeAdapter implements WalletAdapter {
     if (this.mockState.status === "wrong-network") {
       return this.mockState;
     }
-    this.mockState = { status: "connected", address: "GABC123", network: targetNetworkPassphrase || "TESTNET" };
+    this.mockState = {
+      status: "connected",
+      address: "GABC123",
+      network: targetNetworkPassphrase || "TESTNET"
+    };
     if (this.watcherCb) this.watcherCb(this.mockState);
     return this.mockState;
   }
-  
+
   async disconnect(): Promise<void> {
     this.mockState = { status: "disconnected" };
     if (this.watcherCb) this.watcherCb(this.mockState);
@@ -44,17 +48,27 @@ class FakeAdapter implements WalletAdapter {
     return { signedAuthEntry: "signed_" + xdr, signerAddress: "GABC123" };
   }
 
-  watchChanges(callback: (state: WalletState) => void, targetNetworkPassphrase?: string): () => void {
+  watchChanges(
+    callback: (state: WalletState) => void,
+    targetNetworkPassphrase?: string
+  ): () => void {
     this.watcherCb = callback;
-    return () => { this.watcherCb = undefined; };
+    return () => {
+      this.watcherCb = undefined;
+    };
   }
 
   // Helper for test to simulate external changes
   simulateNetworkChange(network: string, targetPassphrase?: string) {
     if (network !== targetPassphrase) {
-       this.mockState = { status: "wrong-network", address: "GABC123", network, error: "Wrong network" };
+      this.mockState = {
+        status: "wrong-network",
+        address: "GABC123",
+        network,
+        error: "Wrong network"
+      };
     } else {
-       this.mockState = { status: "connected", address: "GABC123", network };
+      this.mockState = { status: "connected", address: "GABC123", network };
     }
     if (this.watcherCb) this.watcherCb(this.mockState);
   }
@@ -65,11 +79,11 @@ describe("WalletSessionMachine", () => {
     const machine = new WalletSessionMachine("TESTNET");
     const adapter = new FakeAdapter();
     machine.setAdapter(adapter);
-    
+
     assert.strictEqual(machine.getState().status, "disconnected");
-    
+
     await machine.connect();
-    
+
     assert.strictEqual(machine.getState().status, "connected");
     assert.strictEqual(machine.getState().address, "GABC123");
   });
@@ -79,7 +93,7 @@ describe("WalletSessionMachine", () => {
     const adapter = new FakeAdapter();
     adapter.capabilities.canSignAuthEntry = false; // unsupported
     machine.setAdapter(adapter);
-    
+
     await machine.connect();
     assert.strictEqual(machine.getState().status, "unsupported");
   });
@@ -87,9 +101,14 @@ describe("WalletSessionMachine", () => {
   test("handles wrong network", async () => {
     const machine = new WalletSessionMachine("PUBLIC");
     const adapter = new FakeAdapter();
-    adapter.mockState = { status: "wrong-network", error: "Wrong network", address: "GABC123", network: "TESTNET" };
+    adapter.mockState = {
+      status: "wrong-network",
+      error: "Wrong network",
+      address: "GABC123",
+      network: "TESTNET"
+    };
     machine.setAdapter(adapter);
-    
+
     await machine.connect();
     assert.strictEqual(machine.getState().status, "wrong-network");
   });
@@ -99,7 +118,7 @@ describe("WalletSessionMachine", () => {
     const adapter = new FakeAdapter();
     machine.setAdapter(adapter);
     await machine.connect();
-    
+
     const promise = machine.signTransaction("tx_xdr");
     assert.strictEqual(machine.getState().status, "signing");
     await promise;
@@ -111,7 +130,7 @@ describe("WalletSessionMachine", () => {
     const adapter = new FakeAdapter();
     machine.setAdapter(adapter);
     await machine.connect();
-    
+
     adapter.mockRejectSign = true;
     try {
       await machine.signTransaction("tx_xdr");
@@ -126,12 +145,12 @@ describe("WalletSessionMachine", () => {
     const adapter = new FakeAdapter();
     machine.setAdapter(adapter);
     await machine.connect();
-    
+
     assert.strictEqual(machine.getState().status, "connected");
-    
+
     adapter.simulateNetworkChange("PUBLIC", "TESTNET");
     assert.strictEqual(machine.getState().status, "wrong-network");
-    
+
     adapter.simulateNetworkChange("TESTNET", "TESTNET");
     assert.strictEqual(machine.getState().status, "connected");
   });

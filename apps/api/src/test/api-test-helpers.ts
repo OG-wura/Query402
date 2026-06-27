@@ -1,8 +1,5 @@
 import { vi } from "vitest";
-import {
-  createTempAnalyticsDbPath,
-  resetAnalyticsStore
-} from "./storage-test-helpers.js";
+import { createTempAnalyticsDbPath, resetAnalyticsStore } from "./storage-test-helpers.js";
 import {
   applySponsorshipTestEnv,
   resetSponsorshipStore,

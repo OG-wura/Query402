@@ -1,5 +1,9 @@
 import { HTTPFacilitatorClient } from "@x402/core/server";
-import { paymentMiddlewareFromHTTPServer, x402HTTPResourceServer, x402ResourceServer } from "@x402/express";
+import {
+  paymentMiddlewareFromHTTPServer,
+  x402HTTPResourceServer,
+  x402ResourceServer
+} from "@x402/express";
 import { ExactStellarScheme } from "@x402/stellar/exact/server";
 import type { NextFunction, Request, Response } from "express";
 import type { HTTPRequestContext } from "@x402/core/server";
@@ -29,8 +33,7 @@ const basePriceByMode: Record<RouteMode, string> = {
 
 function getProviderFromContext(context: HTTPRequestContext) {
   const rawProvider =
-    context.adapter.getQueryParam?.("provider") ??
-    context.adapter.getQueryParams?.()["provider"];
+    context.adapter.getQueryParam?.("provider") ?? context.adapter.getQueryParams?.()["provider"];
 
   if (Array.isArray(rawProvider)) {
     return rawProvider[0];
@@ -116,7 +119,10 @@ export function createX402Middleware() {
     new ExactStellarScheme()
   );
 
-  const settlementFailedResponseBody = async (context: HTTPRequestContext, settleResult: { errorReason?: string; errorMessage?: string }) => {
+  const settlementFailedResponseBody = async (
+    context: HTTPRequestContext,
+    settleResult: { errorReason?: string; errorMessage?: string }
+  ) => {
     const req = requestFromHttpContext(context);
     const requirements = requirementsFromPaymentHeader(context.paymentHeader);
     if (req && requirements && !(req as EvidenceRequest).paymentEvidencePersisted) {
@@ -169,31 +175,31 @@ export function createX402Middleware() {
     }
   };
 
-  resourceServer
-    .onAfterSettle(async (context) => {
-      const transportContext = context.transportContext;
-      const httpContext = transportContext && typeof transportContext === "object" && "request" in transportContext
+  resourceServer.onAfterSettle(async (context) => {
+    const transportContext = context.transportContext;
+    const httpContext =
+      transportContext && typeof transportContext === "object" && "request" in transportContext
         ? (transportContext.request as HTTPRequestContext | undefined)
         : undefined;
-      const req = httpContext ? requestFromHttpContext(httpContext) : undefined;
-      if (!req) {
-        return;
-      }
+    const req = httpContext ? requestFromHttpContext(httpContext) : undefined;
+    if (!req) {
+      return;
+    }
 
-      if (!httpContext) {
-        return;
-      }
+    if (!httpContext) {
+      return;
+    }
 
-      const evidence = buildEvidenceFromHttpContext({
-        context: httpContext,
-        requirements: context.requirements,
-        paymentPayload: context.paymentPayload,
-        settleResult: context.result
-      });
-      setPaymentEvidence(req, evidence);
-      await persistPaymentEvidence(evidence, getPaidRequestRecord(req));
-      (req as EvidenceRequest).paymentEvidencePersisted = true;
+    const evidence = buildEvidenceFromHttpContext({
+      context: httpContext,
+      requirements: context.requirements,
+      paymentPayload: context.paymentPayload,
+      settleResult: context.result
     });
+    setPaymentEvidence(req, evidence);
+    await persistPaymentEvidence(evidence, getPaidRequestRecord(req));
+    (req as EvidenceRequest).paymentEvidencePersisted = true;
+  });
 
   const httpServer = new x402HTTPResourceServer(resourceServer, routeConfig);
   return paymentMiddlewareFromHTTPServer(httpServer);

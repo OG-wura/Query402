@@ -7,11 +7,12 @@
     "prebuild": "npm --prefix ../../packages/shared run build",
     "pretypecheck": "npm --prefix ../../packages/shared run build",
     "dev": "vite",
-    "build": "tsc -p tsconfig.json && vite build",
+    "build": "tsc -p tsconfig.json --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "echo 'No lint configured for web'",
-    "format": "echo 'No format task configured for web'"
+    "lint": "eslint src vite.config.ts",
+    "format": "prettier --write src vite.config.ts tailwind.config.ts",
+    "format:check": "prettier --check src vite.config.ts tailwind.config.ts"
   },
   "dependencies": {
     "@query402/shared": "0.1.0",

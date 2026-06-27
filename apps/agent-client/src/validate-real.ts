@@ -71,18 +71,27 @@ async function main() {
   }
 
   if (hasPlaceholder(config.DEMO_CLIENT_SECRET_KEY)) {
-    throw new Error("DEMO_CLIENT_SECRET_KEY is missing or placeholder. Use a funded real secret key.");
+    throw new Error(
+      "DEMO_CLIENT_SECRET_KEY is missing or placeholder. Use a funded real secret key."
+    );
   }
 
   if (hasPlaceholder(config.DEMO_CLIENT_PUBLIC_KEY)) {
-    console.warn("[warn] DEMO_CLIENT_PUBLIC_KEY seems placeholder; continuing (optional for client flow).\n");
+    console.warn(
+      "[warn] DEMO_CLIENT_PUBLIC_KEY seems placeholder; continuing (optional for client flow).\n"
+    );
   }
 
   if (hasPlaceholder(config.X402_PAY_TO_ADDRESS)) {
-    throw new Error("X402_PAY_TO_ADDRESS is missing or placeholder. Set a funded seller/public receiving address.");
+    throw new Error(
+      "X402_PAY_TO_ADDRESS is missing or placeholder. Set a funded seller/public receiving address."
+    );
   }
 
-  if (config.X402_FACILITATOR_URL.includes("channels.openzeppelin.com") && !config.X402_FACILITATOR_API_KEY) {
+  if (
+    config.X402_FACILITATOR_URL.includes("channels.openzeppelin.com") &&
+    !config.X402_FACILITATOR_API_KEY
+  ) {
     throw new Error(
       "X402_FACILITATOR_API_KEY is required for OpenZeppelin facilitator. Generate one from https://channels.openzeppelin.com/testnet/gen"
     );
@@ -95,7 +104,9 @@ async function main() {
   console.log("[step] Checking facilitator /supported...");
   const facilitator = await checkFacilitator(config.X402_FACILITATOR_URL);
   if (!facilitator.ok) {
-    throw new Error(`Facilitator check failed (${facilitator.status}): ${String(facilitator.body)}`);
+    throw new Error(
+      `Facilitator check failed (${facilitator.status}): ${String(facilitator.body)}`
+    );
   }
 
   console.log("[ok] Facilitator reachable and returned /supported response.");
@@ -113,7 +124,8 @@ async function main() {
     );
   }
 
-  const paymentHeader = result.paymentResponse ?? (result.body as any)?.payment?.paymentResponseHeader ?? null;
+  const paymentHeader =
+    result.paymentResponse ?? (result.body as any)?.payment?.paymentResponseHeader ?? null;
 
   console.log("\n--- Real payment proof ---");
   console.log(`Status: ${result.status}`);

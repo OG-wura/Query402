@@ -16,35 +16,35 @@ Clients generate a UUID per logical request and **reuse the same key** on safe r
 
 The server hashes a canonical JSON object:
 
-| Field | Description |
-|-------|-------------|
-| `method` | `GET` or `POST` |
-| `route` | e.g. `/x402/search`, `/api/paid/run` |
-| `provider` | Provider id |
-| `input` | `{ q }` or `{ url }` (trimmed) |
-| `payer` | Wallet public key or payment identity |
-| `network` | e.g. `stellar:testnet` |
-| `quotedAmountUsd` | Catalog price at execution time |
+| Field             | Description                           |
+| ----------------- | ------------------------------------- |
+| `method`          | `GET` or `POST`                       |
+| `route`           | e.g. `/x402/search`, `/api/paid/run`  |
+| `provider`        | Provider id                           |
+| `input`           | `{ q }` or `{ url }` (trimmed)        |
+| `payer`           | Wallet public key or payment identity |
+| `network`         | e.g. `stellar:testnet`                |
+| `quotedAmountUsd` | Catalog price at execution time       |
 
 Reusing `Idempotency-Key` with a **different fingerprint** → `409 idempotency_key_conflict`.
 
 ## Covered routes
 
-| Route | Method |
-|-------|--------|
-| `GET /x402/search` | Wallet / agent x402 |
-| `GET /x402/news` | Wallet / agent x402 |
-| `GET /x402/scrape` | Wallet / agent x402 |
-| `POST /api/paid/run` | Sponsored flow |
+| Route                | Method              |
+| -------------------- | ------------------- |
+| `GET /x402/search`   | Wallet / agent x402 |
+| `GET /x402/news`     | Wallet / agent x402 |
+| `GET /x402/scrape`   | Wallet / agent x402 |
+| `POST /api/paid/run` | Sponsored flow      |
 
 ## HTTP behavior
 
-| Situation | Status | Body |
-|-----------|--------|------|
-| Cache hit (valid retry) | `200` | Original response |
-| In-flight duplicate | `409` | `idempotency_in_progress` |
-| Key reused with different payload | `409` | `idempotency_key_conflict` |
-| Storage unavailable | `503` | `idempotency_storage_unavailable` |
+| Situation                         | Status | Body                              |
+| --------------------------------- | ------ | --------------------------------- |
+| Cache hit (valid retry)           | `200`  | Original response                 |
+| In-flight duplicate               | `409`  | `idempotency_in_progress`         |
+| Key reused with different payload | `409`  | `idempotency_key_conflict`        |
+| Storage unavailable               | `503`  | `idempotency_storage_unavailable` |
 
 ## Payment proof dedup
 

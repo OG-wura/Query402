@@ -57,15 +57,20 @@ export default function LandingPage() {
             This is the front stage of agent commerce.
           </h1>
           <p>
-            Query402 turns internet actions into priced, payable intents. Search, news, and scraping become on-demand transactions
-            with transparent settlement and audit trails.
+            Query402 turns internet actions into priced, payable intents. Search, news, and scraping
+            become on-demand transactions with transparent settlement and audit trails.
           </p>
           <div className="lpx-hero-actions">
             <Link className="lpx-cta strong" to="/control">
               Run live payment flow
               <ArrowRight size={16} />
             </Link>
-            <a className="lpx-cta muted" href="https://developers.stellar.org" target="_blank" rel="noreferrer">
+            <a
+              className="lpx-cta muted"
+              href="https://developers.stellar.org"
+              target="_blank"
+              rel="noreferrer"
+            >
               Explore Stellar
             </a>
           </div>
@@ -102,8 +107,9 @@ export default function LandingPage() {
               not subscriptions.
             </h1>
             <p>
-              Query402 removes fixed-cost bloat and replaces it with granular, verifiable access. Every query is priced, paid,
-              and persisted into analytics that can be shown to judges, teams, and users.
+              Query402 removes fixed-cost bloat and replaces it with granular, verifiable access.
+              Every query is priced, paid, and persisted into analytics that can be shown to judges,
+              teams, and users.
             </p>
           </article>
         </section>
@@ -140,7 +146,8 @@ export default function LandingPage() {
             <p>For product teams</p>
             <h3>Ship agent internet access without annual contracts.</h3>
             <p>
-              Start with mock providers for guaranteed demos, then switch to real integrations when keys are available.
+              Start with mock providers for guaranteed demos, then switch to real integrations when
+              keys are available.
             </p>
           </article>
 
@@ -148,7 +155,8 @@ export default function LandingPage() {
             <p>For judges</p>
             <h3>One narrative: compare, pay, prove.</h3>
             <p>
-              Live request, payment proof, structured results, and spend analytics — all visible in under two minutes.
+              Live request, payment proof, structured results, and spend analytics — all visible in
+              under two minutes.
             </p>
           </article>
 
@@ -156,7 +164,8 @@ export default function LandingPage() {
             <p>For builders</p>
             <h3>Monorepo architecture that scales after demo day.</h3>
             <p>
-              Separate landing and control routes, shared schemas, protected API endpoints, and a CLI validation path.
+              Separate landing and control routes, shared schemas, protected API endpoints, and a
+              CLI validation path.
             </p>
           </article>
         </section>

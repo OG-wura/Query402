@@ -6,6 +6,11 @@
   <img src="./public/Query402-logo.png" alt="Query402 logo" width="180" />
   <h1>Query402</h1>
   <p><strong>Agentic pay-per-query internet access on Stellar with x402.</strong></p>
+  <p>
+    <a href="https://github.com/emrekayat/Query402/actions/workflows/ci.yml">
+      <img src="https://github.com/emrekayat/Query402/actions/workflows/ci.yml/badge.svg" alt="CI status" />
+    </a>
+  </p>
 </div>
 
 Query402 is a hackathon-ready marketplace-style router where agents can buy `search`, `news`, and `scrape` results per request instead of paying monthly subscriptions.
@@ -127,6 +132,22 @@ npm run test:coverage
 ```
 
 Details: [`docs/testing.md`](./docs/testing.md)
+
+## Quality gates
+
+Run the same checks locally that CI enforces on pull requests:
+
+```bash
+npm ci
+npm run typecheck
+npm run build
+npm run test
+npm run lint
+npm run format:check
+npm run check:source-artifacts
+```
+
+CI uses the Node version from `.nvmrc`, installs dependencies with `npm ci`, and does not require credentials or live Stellar payments.
 
 ## Run backend API
 

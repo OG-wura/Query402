@@ -31,10 +31,14 @@ export function buildAnalyticsSummary(
   }, emptySpendByCategory());
 
   const settledSpendUsd = Number(
-    Object.values(settledSpendByCategory).reduce((sum, value) => sum + value, 0).toFixed(6)
+    Object.values(settledSpendByCategory)
+      .reduce((sum, value) => sum + value, 0)
+      .toFixed(6)
   );
   const demoSpendUsd = Number(
-    Object.values(demoSpendByCategory).reduce((sum, value) => sum + value, 0).toFixed(6)
+    Object.values(demoSpendByCategory)
+      .reduce((sum, value) => sum + value, 0)
+      .toFixed(6)
   );
   const failedSpendUsd = Number(
     usage
@@ -112,7 +116,9 @@ export function rowToUsageEvent(row: Record<string, unknown>): UsageEvent {
     latencyMs: Number(row.latency_ms),
     sponsorshipGrantId: row.sponsorship_grant_id ? String(row.sponsorship_grant_id) : undefined,
     policyDecision: row.policy_decision ? String(row.policy_decision) : undefined,
-    paymentSource: row.payment_source ? (row.payment_source as UsageEvent["paymentSource"]) : undefined,
+    paymentSource: row.payment_source
+      ? (row.payment_source as UsageEvent["paymentSource"])
+      : undefined,
     sponsorPublicKey: row.sponsor_public_key ? String(row.sponsor_public_key) : undefined
   };
 }
@@ -132,7 +138,9 @@ export function paymentAttemptToRow(payment: PaymentAttempt) {
     facilitator_url: payment.facilitatorUrl,
     status: payment.status,
     transaction_hash: payment.transactionHash ?? null,
-    facilitator_result: payment.facilitatorResult ? JSON.stringify(payment.facilitatorResult) : null,
+    facilitator_result: payment.facilitatorResult
+      ? JSON.stringify(payment.facilitatorResult)
+      : null,
     error: payment.error ?? null,
     created_at: payment.createdAt,
     sponsorship_grant_id: payment.sponsorshipGrantId ?? null,
@@ -151,7 +159,9 @@ export function rowToPaymentAttempt(row: Record<string, unknown>): PaymentAttemp
     network: String(row.network),
     asset: row.asset ? String(row.asset) : undefined,
     amount: row.amount ? String(row.amount) : undefined,
-    evidenceKind: row.evidence_kind ? (row.evidence_kind as PaymentAttempt["evidenceKind"]) : undefined,
+    evidenceKind: row.evidence_kind
+      ? (row.evidence_kind as PaymentAttempt["evidenceKind"])
+      : undefined,
     payerPublicKey: row.payer_public_key ? String(row.payer_public_key) : undefined,
     payToAddress: String(row.pay_to_address),
     facilitatorUrl: String(row.facilitator_url),
@@ -164,7 +174,9 @@ export function rowToPaymentAttempt(row: Record<string, unknown>): PaymentAttemp
     createdAt: String(row.created_at),
     sponsorshipGrantId: row.sponsorship_grant_id ? String(row.sponsorship_grant_id) : undefined,
     policyDecision: row.policy_decision ? String(row.policy_decision) : undefined,
-    paymentSource: row.payment_source ? (row.payment_source as PaymentAttempt["paymentSource"]) : undefined,
+    paymentSource: row.payment_source
+      ? (row.payment_source as PaymentAttempt["paymentSource"])
+      : undefined,
     sponsorPublicKey: row.sponsor_public_key ? String(row.sponsor_public_key) : undefined
   };
 }

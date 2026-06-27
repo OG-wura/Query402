@@ -13,7 +13,7 @@ export class FreighterAdapter implements WalletAdapter {
   name = "Freighter";
   capabilities = {
     canSignTransaction: true,
-    canSignAuthEntry: true,
+    canSignAuthEntry: true
   };
 
   private watcher: WatchWalletChanges | null = null;
@@ -21,8 +21,12 @@ export class FreighterAdapter implements WalletAdapter {
 
   private isUserRejection(error: any): boolean {
     if (!error) return false;
-    const msg = typeof error === 'string' ? error : (error.message || '');
-    return msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('decline') || msg.toLowerCase().includes('cancel');
+    const msg = typeof error === "string" ? error : error.message || "";
+    return (
+      msg.toLowerCase().includes("reject") ||
+      msg.toLowerCase().includes("decline") ||
+      msg.toLowerCase().includes("cancel")
+    );
   }
 
   async checkState(targetNetworkPassphrase?: string): Promise<WalletState> {
@@ -35,9 +39,12 @@ export class FreighterAdapter implements WalletAdapter {
       const accessRes = await requestAccess();
       if (accessRes.error || !accessRes.address) {
         if (this.isUserRejection(accessRes.error)) {
-           return { status: "rejected", error: "User rejected connection" };
+          return { status: "rejected", error: "User rejected connection" };
         }
-        return { status: "disconnected", error: accessRes.error ? String(accessRes.error) : "Access denied" };
+        return {
+          status: "disconnected",
+          error: accessRes.error ? String(accessRes.error) : "Access denied"
+        };
       }
 
       const networkRes = await getNetworkDetails();
@@ -46,11 +53,11 @@ export class FreighterAdapter implements WalletAdapter {
       }
 
       if (targetNetworkPassphrase && networkRes.networkPassphrase !== targetNetworkPassphrase) {
-        return { 
-          status: "wrong-network", 
+        return {
+          status: "wrong-network",
           address: accessRes.address,
           network: networkRes.networkPassphrase,
-          error: `Wrong network. Expected ${targetNetworkPassphrase}` 
+          error: `Wrong network. Expected ${targetNetworkPassphrase}`
         };
       }
 
@@ -59,7 +66,6 @@ export class FreighterAdapter implements WalletAdapter {
         address: accessRes.address,
         network: networkRes.networkPassphrase
       };
-
     } catch (e: any) {
       if (this.isUserRejection(e)) {
         return { status: "rejected", error: "User rejected connection" };
@@ -85,7 +91,7 @@ export class FreighterAdapter implements WalletAdapter {
     const res = await signTransaction(xdr, opts);
     if (res.error || !res.signedTxXdr) {
       if (this.isUserRejection(res.error)) {
-         throw new Error("User rejected transaction");
+        throw new Error("User rejected transaction");
       }
       throw new Error(res.error ? String(res.error) : "Failed to sign transaction");
     }
@@ -99,7 +105,7 @@ export class FreighterAdapter implements WalletAdapter {
     const res = await signAuthEntry(xdr, opts);
     if (res.error || !res.signedAuthEntry) {
       if (this.isUserRejection(res.error)) {
-         throw new Error("User rejected signature");
+        throw new Error("User rejected signature");
       }
       throw new Error(res.error ? String(res.error) : "Failed to sign auth entry");
     }
@@ -109,12 +115,15 @@ export class FreighterAdapter implements WalletAdapter {
     };
   }
 
-  watchChanges(callback: (state: WalletState) => void, targetNetworkPassphrase?: string): () => void {
+  watchChanges(
+    callback: (state: WalletState) => void,
+    targetNetworkPassphrase?: string
+  ): () => void {
     if (this.watcher) {
       this.watcher.stop();
     }
     this.watcher = new WatchWalletChanges();
-    
+
     // We cannot easily determine rejection here, but we'll re-evaluate full state
     const fetchFullState = async () => {
       const state = await this.checkState(targetNetworkPassphrase);

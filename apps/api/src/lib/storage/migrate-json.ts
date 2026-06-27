@@ -151,7 +151,10 @@ function insertRecords(
   database: Database.Database,
   usage: UsageEvent[],
   payments: PaymentAttempt[]
-): Pick<JsonMigrationResult, "usageInserted" | "usageSkipped" | "paymentsInserted" | "paymentsSkipped"> {
+): Pick<
+  JsonMigrationResult,
+  "usageInserted" | "usageSkipped" | "paymentsInserted" | "paymentsSkipped"
+> {
   const insertUsage = database.prepare(INSERT_USAGE);
   const insertPayment = database.prepare(INSERT_PAYMENT);
 

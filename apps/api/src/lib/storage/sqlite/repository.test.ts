@@ -74,7 +74,9 @@ describe("SqliteStorageRepository", () => {
 
     expect(() =>
       runInAnalyticsTransaction(dbPath, (database) => {
-        database.prepare(`
+        database
+          .prepare(
+            `
           INSERT INTO payment_attempts (
             id, endpoint, provider_id, amount_usd, network, payer_public_key,
             pay_to_address, facilitator_url, status, transaction_hash, error,
@@ -84,8 +86,12 @@ describe("SqliteStorageRepository", () => {
             @pay_to_address, @facilitator_url, @status, @transaction_hash, @error,
             @created_at, @sponsorship_grant_id, @policy_decision, @payment_source, @sponsor_public_key
           )
-        `).run(paymentAttemptToRow(payment));
-        database.prepare(`
+        `
+          )
+          .run(paymentAttemptToRow(payment));
+        database
+          .prepare(
+            `
           INSERT INTO usage_events (
             id, mode, endpoint, provider_id, query_or_url, price_usd, network,
             payment_status, payment_tx_hash, facilitator_url, payer_public_key,
@@ -97,7 +103,9 @@ describe("SqliteStorageRepository", () => {
             @trace_id, @created_at, @latency_ms, @sponsorship_grant_id, @policy_decision,
             @payment_source, @sponsor_public_key
           )
-        `).run(usageEventToRow(usage));
+        `
+          )
+          .run(usageEventToRow(usage));
         throw new Error("forced rollback");
       })
     ).toThrow("forced rollback");
@@ -162,7 +170,9 @@ describe("legacy db.json migration", () => {
       fs.rmSync(sourcePath, { force: true });
     }
 
-    for (const archived of fs.readdirSync("/tmp").filter((name) => name.startsWith("query402-legacy-"))) {
+    for (const archived of fs
+      .readdirSync("/tmp")
+      .filter((name) => name.startsWith("query402-legacy-"))) {
       fs.rmSync(`/tmp/${archived}`, { force: true });
     }
 

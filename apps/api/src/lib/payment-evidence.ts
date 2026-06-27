@@ -1,17 +1,19 @@
 import { nanoid } from "nanoid";
 import type { NextFunction, Request, Response } from "express";
 import type { PaymentAttempt, QueryMode, UsageEvent } from "@query402/shared";
-import type { PaymentPayload, PaymentRequirements, SettleResponse, VerifyResponse } from "@x402/core/types";
+import type {
+  PaymentPayload,
+  PaymentRequirements,
+  SettleResponse,
+  VerifyResponse
+} from "@x402/core/types";
 import type { HTTPRequestContext } from "@x402/core/server";
 import { config } from "./config.js";
 import { getProviderById } from "./pricing.js";
 import { persistPaymentAndUsage, savePaymentAttempt } from "./persistence.js";
 
 export type PaymentEvidence =
-  | DemoPaymentEvidence
-  | VerifiedPaymentEvidence
-  | SettledPaymentEvidence
-  | FailedPaymentEvidence;
+  DemoPaymentEvidence | VerifiedPaymentEvidence | SettledPaymentEvidence | FailedPaymentEvidence;
 
 export type DemoPaymentEvidence = EvidenceBase & {
   kind: "demo";
@@ -153,7 +155,11 @@ export function assertRequestMatchesEvidence(req: Request, evidence: PaymentEvid
     throw new PaymentEvidenceError("Payment evidence does not match request");
   }
 
-  if (evidence.mode !== mode || evidence.providerId !== providerId || evidence.endpoint !== req.path) {
+  if (
+    evidence.mode !== mode ||
+    evidence.providerId !== providerId ||
+    evidence.endpoint !== req.path
+  ) {
     throw new PaymentEvidenceError("Payment evidence does not match request");
   }
 
@@ -319,7 +325,10 @@ function toJsonRecord(value: unknown): Record<string, unknown> | undefined {
   return JSON.parse(JSON.stringify(value)) as Record<string, unknown>;
 }
 
-export async function persistPaymentEvidence(evidence: PaymentEvidence, record?: PaidRequestRecord) {
+export async function persistPaymentEvidence(
+  evidence: PaymentEvidence,
+  record?: PaidRequestRecord
+) {
   assertPriceMatchesProvider(evidence);
   const now = new Date().toISOString();
   const payment: PaymentAttempt = {
@@ -336,7 +345,8 @@ export async function persistPaymentEvidence(evidence: PaymentEvidence, record?:
     facilitatorUrl: evidence.facilitatorUrl,
     status: evidence.status,
     transactionHash: evidence.kind === "settled" ? evidence.transactionHash : undefined,
-    facilitatorResult: "facilitatorResult" in evidence ? toJsonRecord(evidence.facilitatorResult) : undefined,
+    facilitatorResult:
+      "facilitatorResult" in evidence ? toJsonRecord(evidence.facilitatorResult) : undefined,
     error: evidence.kind === "failed" ? evidence.error : undefined,
     createdAt: now
   };

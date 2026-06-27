@@ -37,27 +37,42 @@ export class WalletSessionMachine {
   setAdapter(adapter: WalletAdapter) {
     this.disconnect(); // cleanup old adapter
     this.adapter = adapter;
-    
+
     // Test capabilities early if needed, though they are static on the adapter
     if (!adapter.capabilities.canSignTransaction || !adapter.capabilities.canSignAuthEntry) {
-      this.setState({ status: "unsupported", error: "Wallet does not support required Stellar x402 signing capabilities" });
+      this.setState({
+        status: "unsupported",
+        error: "Wallet does not support required Stellar x402 signing capabilities"
+      });
       return;
     }
 
     this.unwatch = adapter.watchChanges((newState) => {
       // Re-evaluate supported capabilities when state changes if needed
-      if (newState.status === 'connected' && (!adapter.capabilities.canSignTransaction || !adapter.capabilities.canSignAuthEntry)) {
-         this.setState({ status: "unsupported", error: "Wallet does not support required Stellar x402 signing capabilities" });
-         return;
+      if (
+        newState.status === "connected" &&
+        (!adapter.capabilities.canSignTransaction || !adapter.capabilities.canSignAuthEntry)
+      ) {
+        this.setState({
+          status: "unsupported",
+          error: "Wallet does not support required Stellar x402 signing capabilities"
+        });
+        return;
       }
       this.setState(newState);
     }, this.targetNetworkPassphrase);
 
     // Initial check
-    adapter.checkState(this.targetNetworkPassphrase).then(newState => {
-       if (newState.status === 'connected' && (!adapter.capabilities.canSignTransaction || !adapter.capabilities.canSignAuthEntry)) {
-         this.setState({ status: "unsupported", error: "Wallet does not support required Stellar x402 signing capabilities" });
-         return;
+    adapter.checkState(this.targetNetworkPassphrase).then((newState) => {
+      if (
+        newState.status === "connected" &&
+        (!adapter.capabilities.canSignTransaction || !adapter.capabilities.canSignAuthEntry)
+      ) {
+        this.setState({
+          status: "unsupported",
+          error: "Wallet does not support required Stellar x402 signing capabilities"
+        });
+        return;
       }
       this.setState(newState);
     });
@@ -68,13 +83,20 @@ export class WalletSessionMachine {
     if (this.state.status === "connecting" || this.state.status === "signing") return;
 
     this.setState({ status: "connecting", error: undefined });
-    
+
     try {
       const result = await this.adapter.connect(this.targetNetworkPassphrase);
-      
-      if (result.status === 'connected' && (!this.adapter.capabilities.canSignTransaction || !this.adapter.capabilities.canSignAuthEntry)) {
-         this.setState({ status: "unsupported", error: "Wallet does not support required Stellar x402 signing capabilities" });
-         return;
+
+      if (
+        result.status === "connected" &&
+        (!this.adapter.capabilities.canSignTransaction ||
+          !this.adapter.capabilities.canSignAuthEntry)
+      ) {
+        this.setState({
+          status: "unsupported",
+          error: "Wallet does not support required Stellar x402 signing capabilities"
+        });
+        return;
       }
 
       this.setState(result);
@@ -91,16 +113,21 @@ export class WalletSessionMachine {
     if (this.adapter) {
       await this.adapter.disconnect();
     }
-    this.setState({ status: "disconnected", address: undefined, network: undefined, error: undefined });
+    this.setState({
+      status: "disconnected",
+      address: undefined,
+      network: undefined,
+      error: undefined
+    });
   }
 
   async signTransaction(xdr: string, opts?: { networkPassphrase?: string }) {
     if (!this.adapter) throw new Error("No adapter set");
     if (this.state.status !== "connected") throw new Error("Wallet not connected");
-    
+
     const prevState = this.state.status;
     this.setState({ status: "signing", error: undefined });
-    
+
     try {
       const result = await this.adapter.signTransaction(xdr, opts);
       this.setState({ status: prevState }); // restore connected
@@ -118,7 +145,7 @@ export class WalletSessionMachine {
 
     const prevState = this.state.status;
     this.setState({ status: "signing", error: undefined });
-    
+
     try {
       const result = await this.adapter.signAuthEntry(xdr, opts);
       this.setState({ status: prevState }); // restore connected

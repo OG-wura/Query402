@@ -71,11 +71,11 @@ async function postPaidRun(
   }
 
   return httpRequest.send({
-      mode: "search",
-      provider: "search.basic",
-      wallet: options.wallet ?? TEST_WALLET,
-      query: "test query"
-    });
+    mode: "search",
+    provider: "search.basic",
+    wallet: options.wallet ?? TEST_WALLET,
+    query: "test query"
+  });
 }
 
 describe("POST /api/paid/run sponsorship", () => {

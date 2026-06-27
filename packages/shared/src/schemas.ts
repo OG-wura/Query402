@@ -32,9 +32,7 @@ export const scrapeQuerySchema = baseQuerySchema.extend({
   url: z.string().url()
 });
 
-const stellarPublicKeySchema = z
-  .string()
-  .regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
+const stellarPublicKeySchema = z.string().regex(/^G[A-Z2-7]{55}$/, "Invalid Stellar public key");
 
 export const sponsorshipGrantSchema = z.object({
   grantId: z.string().uuid(),

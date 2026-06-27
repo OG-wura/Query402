@@ -78,7 +78,10 @@ export function isAnalyticsDbAvailable(dbPath: string): boolean {
   }
 }
 
-export function runInAnalyticsTransaction<T>(dbPath: string, fn: (database: Database.Database) => T): T {
+export function runInAnalyticsTransaction<T>(
+  dbPath: string,
+  fn: (database: Database.Database) => T
+): T {
   const database = getAnalyticsDb(dbPath);
   const transaction = database.transaction(fn);
   return transaction(database);

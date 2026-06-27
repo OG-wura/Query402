@@ -10,7 +10,7 @@ interface CircuitBreakerConfig {
 const DEFAULT_CONFIG: CircuitBreakerConfig = {
   maxFailures: 3,
   cooldownMs: 30000,
-  timeoutMs: 5000,
+  timeoutMs: 5000
 };
 
 class CircuitBreaker {
@@ -92,19 +92,19 @@ export class DefaultProviderRegistry implements ProviderRegistry {
 
     // If it's a strictly deterministic (mock) adapter
     if (providerDef.sourceType === "deterministic-fallback") {
-       if (adapter.getFallback) {
-         return {
-           items: adapter.getFallback(queryOrUrl),
-           source: "deterministic-fallback"
-         };
-       }
-       // Fallback to executing it directly if no getFallback is provided
-       try {
-         const items = await adapter.execute(queryOrUrl);
-         return { items, source: "deterministic-fallback" };
-       } catch (err) {
-         return { items: [], source: "unavailable" };
-       }
+      if (adapter.getFallback) {
+        return {
+          items: adapter.getFallback(queryOrUrl),
+          source: "deterministic-fallback"
+        };
+      }
+      // Fallback to executing it directly if no getFallback is provided
+      try {
+        const items = await adapter.execute(queryOrUrl);
+        return { items, source: "deterministic-fallback" };
+      } catch (err) {
+        return { items: [], source: "unavailable" };
+      }
     }
 
     // Real adapter logic

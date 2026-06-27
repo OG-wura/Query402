@@ -10,7 +10,8 @@ To add a new data provider to the Query402 network, follow these steps:
    Open `apps/api/src/lib/pricing.ts` and add your provider configuration to the `providers` array. Ensure you provide a unique `id`, a descriptive `category` (search, news, or scrape), and an estimated `latencyEstimateMs`. Determine if it's a `live` provider or just a `deterministic-fallback` demo provider.
 
 2. **Create the Adapter Class:**
-   Create a new file (or append to the relevant category file like `search.ts`) exporting a class that implements `ProviderAdapter`. 
+   Create a new file (or append to the relevant category file like `search.ts`) exporting a class that implements `ProviderAdapter`.
+
    ```typescript
    export class MyCustomAdapter implements ProviderAdapter {
      constructor(public id: string) {}

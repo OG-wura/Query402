@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type { ProviderDefinition, QueryMode } from "@query402/shared";
-import { Activity, CircleDollarSign, Gauge, Home, Radar, ReceiptText, Sparkles, TerminalSquare } from "lucide-react";
+import {
+  Activity,
+  CircleDollarSign,
+  Gauge,
+  Home,
+  Radar,
+  ReceiptText,
+  Sparkles,
+  TerminalSquare
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import type { AnalyticsResponse, PaidQueryResponse } from "../types.js";
 import { API_BASE_URL, fetchJson, money } from "../lib/api.js";
@@ -32,7 +41,7 @@ export default function ControlDeckPage() {
   const [mode, setMode] = useState<QueryMode>("search");
   const [paymentMode, setPaymentMode] = useState<"wallet" | "sponsored">("wallet");
   const [walletState, setWalletState] = useState<WalletState>({ status: "disconnected" });
-  
+
   const walletMachine = useMemo(() => {
     const machine = new WalletSessionMachine("Test SDF Network ; September 2015");
     machine.setAdapter(new FreighterAdapter());
@@ -64,8 +73,11 @@ export default function ControlDeckPage() {
 
   const activeInput = mode === "scrape" ? urlInput : queryInput;
   const walletConnected = walletState.status === "connected";
-  const estimatedTokenAmount = selectedProviderDetails?.priceUsd.toFixed(TOKEN_DECIMALS) ?? "0.0000000";
-  const estimatedTokenBaseUnits = selectedProviderDetails ? toTokenBaseUnits(selectedProviderDetails.priceUsd) : "0";
+  const estimatedTokenAmount =
+    selectedProviderDetails?.priceUsd.toFixed(TOKEN_DECIMALS) ?? "0.0000000";
+  const estimatedTokenBaseUnits = selectedProviderDetails
+    ? toTokenBaseUnits(selectedProviderDetails.priceUsd)
+    : "0";
 
   function shortAddress(address: string) {
     if (address.length < 12) {
@@ -106,7 +118,9 @@ export default function ControlDeckPage() {
     }
 
     bootstrap().catch((bootstrapError) => {
-      setError(bootstrapError instanceof Error ? bootstrapError.message : "Failed to load API data");
+      setError(
+        bootstrapError instanceof Error ? bootstrapError.message : "Failed to load API data"
+      );
     });
   }, []);
 
@@ -163,10 +177,10 @@ export default function ControlDeckPage() {
       if (runError instanceof Error) {
         setError(runError.message);
         if (runError.message.toLowerCase().includes("reject")) {
-           // Normalize rejection
-           setError("Transaction rejected by user");
+          // Normalize rejection
+          setError("Transaction rejected by user");
         } else {
-           setError("Query failed");
+          setError("Query failed");
         }
       }
     } finally {
@@ -185,7 +199,10 @@ export default function ControlDeckPage() {
             <Sparkles size={13} /> Query402 Control Deck
           </p>
           <h1>Agentic internet access, paid per request.</h1>
-          <p className="subtitle">On Stellar testnet, pick a provider through the x402 flow, pay per query, and audit the trace instantly.</p>
+          <p className="subtitle">
+            On Stellar testnet, pick a provider through the x402 flow, pay per query, and audit the
+            trace instantly.
+          </p>
           <Link className="ghost-btn topbar-link" to="/">
             <Home size={14} /> Back to landing
           </Link>
@@ -202,19 +219,42 @@ export default function ControlDeckPage() {
               >
                 {walletState.status === "connecting" ? "Connecting..." : "Connect Wallet"}
               </button>
-              <button type="button" className="wallet-btn ghost" onClick={disconnectWallet} disabled={!walletConnected}>
+              <button
+                type="button"
+                className="wallet-btn ghost"
+                onClick={disconnectWallet}
+                disabled={!walletConnected}
+              >
                 Disconnect
               </button>
               <span className={walletConnected ? "wallet-status connected" : "wallet-status"}>
-                {walletConnected ? `Connected: ${shortAddress(walletState.address!)}` : walletState.status}
+                {walletConnected
+                  ? `Connected: ${shortAddress(walletState.address!)}`
+                  : walletState.status}
               </span>
             </div>
           </div>
 
-          <StatTile label="Queries" value={String(analytics?.totalQueries ?? 0)} icon={<Activity size={16} />} />
-          <StatTile label="Spend" value={money(analytics?.totalSpendUsd ?? 0)} icon={<CircleDollarSign size={16} />} />
-          <StatTile label="Search" value={money(analytics?.spendByCategory.search ?? 0)} icon={<Radar size={16} />} />
-          <StatTile label="News" value={money(analytics?.spendByCategory.news ?? 0)} icon={<ReceiptText size={16} />} />
+          <StatTile
+            label="Queries"
+            value={String(analytics?.totalQueries ?? 0)}
+            icon={<Activity size={16} />}
+          />
+          <StatTile
+            label="Spend"
+            value={money(analytics?.totalSpendUsd ?? 0)}
+            icon={<CircleDollarSign size={16} />}
+          />
+          <StatTile
+            label="Search"
+            value={money(analytics?.spendByCategory.search ?? 0)}
+            icon={<Radar size={16} />}
+          />
+          <StatTile
+            label="News"
+            value={money(analytics?.spendByCategory.news ?? 0)}
+            icon={<ReceiptText size={16} />}
+          />
         </div>
       </header>
 
@@ -241,16 +281,26 @@ export default function ControlDeckPage() {
           <div className="input-shell">
             <label>{mode === "scrape" ? "TARGET URL" : "RESEARCH QUERY"}</label>
             {mode === "scrape" ? (
-              <input value={urlInput} onChange={(event) => setUrlInput(event.target.value)} placeholder="https://example.com" />
+              <input
+                value={urlInput}
+                onChange={(event) => setUrlInput(event.target.value)}
+                placeholder="https://example.com"
+              />
             ) : (
-              <input value={queryInput} onChange={(event) => setQueryInput(event.target.value)} placeholder="latest stellar x402 updates" />
+              <input
+                value={queryInput}
+                onChange={(event) => setQueryInput(event.target.value)}
+                placeholder="latest stellar x402 updates"
+              />
             )}
 
             <label>PAYMENT MODE (Hackathon)</label>
             <div className="payment-mode-switch">
               <button
                 type="button"
-                className={paymentMode === "sponsored" ? "payment-mode-btn active" : "payment-mode-btn"}
+                className={
+                  paymentMode === "sponsored" ? "payment-mode-btn active" : "payment-mode-btn"
+                }
                 onClick={() => setPaymentMode("sponsored")}
                 disabled={!walletConnected || !sponsorshipEnabled}
               >
@@ -258,7 +308,9 @@ export default function ControlDeckPage() {
               </button>
               <button
                 type="button"
-                className={paymentMode === "wallet" ? "payment-mode-btn active" : "payment-mode-btn"}
+                className={
+                  paymentMode === "wallet" ? "payment-mode-btn active" : "payment-mode-btn"
+                }
                 onClick={() => setPaymentMode("wallet")}
                 disabled={!walletConnected}
               >
@@ -266,7 +318,8 @@ export default function ControlDeckPage() {
               </button>
             </div>
             <p className="wallet-hint">
-              Sponsored mode requires wallet connection for ownership proof and an enabled sponsorship policy on the API.
+              Sponsored mode requires wallet connection for ownership proof and an enabled
+              sponsorship policy on the API.
               {!sponsorshipEnabled ? " Sponsorship is currently disabled on the API." : null}
             </p>
           </div>
@@ -276,7 +329,9 @@ export default function ControlDeckPage() {
               <button
                 key={provider.id}
                 onClick={() => setSelectedProvider(provider.id)}
-                className={provider.id === selectedProvider ? "provider-card selected" : "provider-card"}
+                className={
+                  provider.id === selectedProvider ? "provider-card selected" : "provider-card"
+                }
                 style={{ animationDelay: `${index * 70}ms` }}
                 type="button"
               >
@@ -286,7 +341,9 @@ export default function ControlDeckPage() {
                   <span>{money(provider.priceUsd)}</span>
                   <span>{provider.latencyEstimateMs}ms</span>
                   <span>Q{provider.qualityScore}</span>
-                  <span className={`source-badge ${provider.sourceType}`}>{provider.sourceType}</span>
+                  <span className={`source-badge ${provider.sourceType}`}>
+                    {provider.sourceType}
+                  </span>
                 </div>
               </button>
             ))}
@@ -296,15 +353,37 @@ export default function ControlDeckPage() {
             <div>
               <p className="action-label">Provider lock</p>
               <p className="action-value">{selectedProviderDetails?.name ?? "Choose provider"}</p>
-              <p className="action-label">Mode: {paymentMode === "sponsored" ? "Sponsored" : "Wallet"}</p>
+              <p className="action-label">
+                Mode: {paymentMode === "sponsored" ? "Sponsored" : "Wallet"}
+              </p>
             </div>
             <div className="preflight-details">
-              <p className="action-label">Network: <strong>{walletState.network ?? 'Test SDF Network ; September 2015'}</strong></p>
-              <p className="action-label">Asset: <strong>{TOKEN_SYMBOL}</strong></p>
-              <p className="action-label">Amount: <strong>{estimatedTokenAmount}</strong> ({estimatedTokenBaseUnits} base units)</p>
-              <p className="action-label">Pay-to: <strong>dynamic via x402</strong></p>
+              <p className="action-label">
+                Network:{" "}
+                <strong>{walletState.network ?? "Test SDF Network ; September 2015"}</strong>
+              </p>
+              <p className="action-label">
+                Asset: <strong>{TOKEN_SYMBOL}</strong>
+              </p>
+              <p className="action-label">
+                Amount: <strong>{estimatedTokenAmount}</strong> ({estimatedTokenBaseUnits} base
+                units)
+              </p>
+              <p className="action-label">
+                Pay-to: <strong>dynamic via x402</strong>
+              </p>
             </div>
-            <button className="run-btn" onClick={runPaidQuery} disabled={isLoading || walletState.status === "signing" || !selectedProvider || !walletConnected} type="button">
+            <button
+              className="run-btn"
+              onClick={runPaidQuery}
+              disabled={
+                isLoading ||
+                walletState.status === "signing" ||
+                !selectedProvider ||
+                !walletConnected
+              }
+              type="button"
+            >
               {isLoading || walletState.status === "signing" ? "Executing..." : "Run paid query"}
               <TerminalSquare size={16} />
             </button>
@@ -316,7 +395,9 @@ export default function ControlDeckPage() {
           <div className="result-zone sweep">
             <div className="bay-head bay-head--compact">
               <h2>Signal Output</h2>
-              <span>{result ? new Date(result.result.timestamp).toLocaleTimeString() : "waiting"}</span>
+              <span>
+                {result ? new Date(result.result.timestamp).toLocaleTimeString() : "waiting"}
+              </span>
             </div>
 
             {!result ? (
@@ -328,7 +409,9 @@ export default function ControlDeckPage() {
                   <span>{money(result.result.priceUsd)}</span>
                   <span>{result.result.latencyMs}ms</span>
                   <span>{result.result.traceId.slice(0, 12)}</span>
-                  <span className={`source-badge ${result.result.source}`}>Source: {result.result.source}</span>
+                  <span className={`source-badge ${result.result.source}`}>
+                    Source: {result.result.source}
+                  </span>
                 </div>
 
                 <div className="trace-box">
@@ -411,7 +494,19 @@ export default function ControlDeckPage() {
 
           <div className="script-panel">
             <h3>Live payload preview</h3>
-            <pre>{JSON.stringify({ mode, route: paymentMode, provider: selectedProvider, input: activeInput, sponsorshipEnabled }, null, 2)}</pre>
+            <pre>
+              {JSON.stringify(
+                {
+                  mode,
+                  route: paymentMode,
+                  provider: selectedProvider,
+                  input: activeInput,
+                  sponsorshipEnabled
+                },
+                null,
+                2
+              )}
+            </pre>
           </div>
         </aside>
       </main>

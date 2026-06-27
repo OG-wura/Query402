@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { applySponsorshipTestEnv, resetSponsorshipStore } from "../../test/sponsorship-test-helpers.js";
+import {
+  applySponsorshipTestEnv,
+  resetSponsorshipStore
+} from "../../test/sponsorship-test-helpers.js";
 
 describe("idempotency service", () => {
   let dbPath: string | undefined;
@@ -12,11 +15,8 @@ describe("idempotency service", () => {
 
   it("returns conflict when the same key is bound to a different request hash", async () => {
     dbPath = applySponsorshipTestEnv();
-    const {
-      acquireIdempotencyLock,
-      cacheIdempotencyResponse,
-      getCachedIdempotencyResponse
-    } = await import("./service.js");
+    const { acquireIdempotencyLock, cacheIdempotencyResponse, getCachedIdempotencyResponse } =
+      await import("./service.js");
 
     const key = randomUUID();
     const firstHash = "hash-a";
@@ -34,11 +34,8 @@ describe("idempotency service", () => {
 
   it("allows a fresh lock after the record expires", async () => {
     dbPath = applySponsorshipTestEnv({ IDEMPOTENCY_TTL_SECONDS: "1" });
-    const {
-      acquireIdempotencyLock,
-      cacheIdempotencyResponse,
-      getCachedIdempotencyResponse
-    } = await import("./service.js");
+    const { acquireIdempotencyLock, cacheIdempotencyResponse, getCachedIdempotencyResponse } =
+      await import("./service.js");
 
     const key = randomUUID();
     const requestHash = "hash-expired";

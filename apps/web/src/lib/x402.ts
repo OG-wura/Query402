@@ -7,7 +7,9 @@ import { getIdempotencyKey, buildPaidClientRequestKey } from "./idempotency.js";
 
 const stellarRpcUrl = import.meta.env.VITE_STELLAR_RPC_URL ?? "https://soroban-testnet.stellar.org";
 
-function createMachineSigner(wallet: import("./wallet/index.js").WalletSessionMachine): ClientStellarSigner {
+function createMachineSigner(
+  wallet: import("./wallet/index.js").WalletSessionMachine
+): ClientStellarSigner {
   return {
     address: wallet.getState().address!,
     signAuthEntry: async (authEntryXdr, opts) => {
@@ -61,7 +63,10 @@ export async function runWalletPaidQuery(input: {
   );
 
   const signer = createMachineSigner(input.wallet);
-  const client = new x402Client().register("stellar:*", new ExactStellarScheme(signer, { url: stellarRpcUrl }));
+  const client = new x402Client().register(
+    "stellar:*",
+    new ExactStellarScheme(signer, { url: stellarRpcUrl })
+  );
   const fetchWithPayment = wrapFetchWithPayment(fetch, client);
 
   const response = await fetchWithPayment(endpoint, {

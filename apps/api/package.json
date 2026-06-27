@@ -14,8 +14,9 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "migrate:analytics": "tsx src/scripts/migrate-db-json.ts",
-    "lint": "echo 'No lint configured for api'",
-    "format": "echo 'No format task configured for api'"
+    "lint": "eslint src",
+    "format": "prettier --write src",
+    "format:check": "prettier --check src"
   },
   "dependencies": {
     "@query402/shared": "0.1.0",

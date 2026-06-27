@@ -60,25 +60,27 @@ app.use(createX402Middleware());
 app.use(protectedRouter);
 app.use(paidRouter);
 
-app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  if (error instanceof UnsafeScrapeUrlError) {
-    res.status(400).json({
-      error: "Scrape URL is not allowed",
-      type: "unsafe_scrape_url"
-    });
-    return;
-  }
+app.use(
+  (error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    if (error instanceof UnsafeScrapeUrlError) {
+      res.status(400).json({
+        error: "Scrape URL is not allowed",
+        type: "unsafe_scrape_url"
+      });
+      return;
+    }
 
-  if (error instanceof PaymentEvidenceError) {
-    res.status(400).json({
+    if (error instanceof PaymentEvidenceError) {
+      res.status(400).json({
+        error: error.message,
+        type: "payment_evidence_error"
+      });
+      return;
+    }
+
+    res.status(500).json({
       error: error.message,
-      type: "payment_evidence_error"
+      type: "internal_error"
     });
-    return;
   }
-
-  res.status(500).json({
-    error: error.message,
-    type: "internal_error"
-  });
-});
+);

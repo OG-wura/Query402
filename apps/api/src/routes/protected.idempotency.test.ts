@@ -2,7 +2,10 @@ import { randomUUID } from "node:crypto";
 import express from "express";
 import request from "supertest";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { applySponsorshipTestEnv, resetSponsorshipStore } from "../test/sponsorship-test-helpers.js";
+import {
+  applySponsorshipTestEnv,
+  resetSponsorshipStore
+} from "../test/sponsorship-test-helpers.js";
 
 const executeQueryMock = vi.fn();
 
@@ -25,7 +28,8 @@ function mockQueryResult(traceId = "trace_x402") {
 }
 
 async function createTestApp() {
-  const { buildDemoPaymentEvidence, setPaymentEvidence } = await import("../lib/payment-evidence.js");
+  const { buildDemoPaymentEvidence, setPaymentEvidence } =
+    await import("../lib/payment-evidence.js");
   const { protectedRouter } = await import("../routes/protected.js");
   const app = express();
   app.use(express.json());

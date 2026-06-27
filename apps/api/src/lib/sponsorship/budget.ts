@@ -74,7 +74,9 @@ function decrementBudget(
 
 export function isNonceConsumed(nonce: string): boolean {
   const database = getSponsorshipDb();
-  const row = database.prepare(`SELECT 1 AS found FROM sponsorship_nonces WHERE nonce = ?`).get(nonce);
+  const row = database
+    .prepare(`SELECT 1 AS found FROM sponsorship_nonces WHERE nonce = ?`)
+    .get(nonce);
   return Boolean(row);
 }
 
@@ -118,12 +120,20 @@ export function checkAndReserveBudget(input: {
     }
 
     const walletSpent = readSpentUsd(database, "wallet", input.wallet, windowStart);
-    if (exceedsBudgetLimit(walletSpent, input.amountUsd, config.SPONSORSHIP_PER_WALLET_DAILY_BUDGET_USD)) {
+    if (
+      exceedsBudgetLimit(
+        walletSpent,
+        input.amountUsd,
+        config.SPONSORSHIP_PER_WALLET_DAILY_BUDGET_USD
+      )
+    ) {
       throw new SponsorshipBudgetExceededError("wallet");
     }
 
     const globalSpent = readSpentUsd(database, "global", null, windowStart);
-    if (exceedsBudgetLimit(globalSpent, input.amountUsd, config.SPONSORSHIP_GLOBAL_DAILY_BUDGET_USD)) {
+    if (
+      exceedsBudgetLimit(globalSpent, input.amountUsd, config.SPONSORSHIP_GLOBAL_DAILY_BUDGET_USD)
+    ) {
       throw new SponsorshipBudgetExceededError("global");
     }
 

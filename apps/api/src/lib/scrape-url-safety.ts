@@ -34,7 +34,12 @@ type ResolvedAddress = {
 const DEFAULT_MAX_REDIRECTS = 3;
 const DEFAULT_TIMEOUT_MS = 8000;
 const DEFAULT_MAX_RESPONSE_BYTES = 1_000_000;
-const DEFAULT_ACCEPTED_CONTENT_TYPES = ["text/html", "text/plain", "application/xhtml+xml", "application/xml"];
+const DEFAULT_ACCEPTED_CONTENT_TYPES = [
+  "text/html",
+  "text/plain",
+  "application/xhtml+xml",
+  "application/xml"
+];
 
 const IPV4_BLOCKED_RANGES: Array<[number, number]> = [
   [toIPv4Number("0.0.0.0"), toIPv4Number("0.255.255.255")],
@@ -254,10 +259,16 @@ export async function validateScrapeUrl(targetUrl: string, options: ScrapeUrlSaf
 
 function isAcceptedContentType(contentType: string, acceptedContentTypes: string[]) {
   const normalized = contentType.split(";")[0]?.trim().toLowerCase() ?? "";
-  return acceptedContentTypes.some((accepted) => normalized === accepted || normalized.endsWith(`+${accepted}`));
+  return acceptedContentTypes.some(
+    (accepted) => normalized === accepted || normalized.endsWith(`+${accepted}`)
+  );
 }
 
-async function readLimitedBody(response: Response, maxResponseBytes: number, timeoutSignal: AbortSignal) {
+async function readLimitedBody(
+  response: Response,
+  maxResponseBytes: number,
+  timeoutSignal: AbortSignal
+) {
   const reader = response.body?.getReader();
   if (!reader) {
     return "";
@@ -288,7 +299,10 @@ async function readLimitedBody(response: Response, maxResponseBytes: number, tim
   return new TextDecoder().decode(Buffer.concat(chunks));
 }
 
-export async function safeScrapeFetch(targetUrl: string, options: SafeScrapeFetchOptions = {}): Promise<SafeScrapeFetchResult> {
+export async function safeScrapeFetch(
+  targetUrl: string,
+  options: SafeScrapeFetchOptions = {}
+): Promise<SafeScrapeFetchResult> {
   const fetchImpl = options.fetchImpl ?? fetch;
   const maxRedirects = options.maxRedirects ?? DEFAULT_MAX_REDIRECTS;
   const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;

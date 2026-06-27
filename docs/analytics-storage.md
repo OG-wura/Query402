@@ -8,11 +8,11 @@ Paths resolve from the **API package root** (`apps/api/`), not `process.cwd()`, 
 
 ## File locations
 
-| File | Default path | Env var |
-|------|--------------|---------|
-| Analytics SQLite DB | `apps/api/data/analytics.db` | `ANALYTICS_DB_PATH` |
-| Sponsorship SQLite DB | `apps/api/data/sponsorship.db` | `SPONSORSHIP_DB_PATH` |
-| Legacy JSON (deprecated) | `apps/api/data/db.json` or `apps/api/apps/api/data/db.json` | — |
+| File                     | Default path                                                | Env var               |
+| ------------------------ | ----------------------------------------------------------- | --------------------- |
+| Analytics SQLite DB      | `apps/api/data/analytics.db`                                | `ANALYTICS_DB_PATH`   |
+| Sponsorship SQLite DB    | `apps/api/data/sponsorship.db`                              | `SPONSORSHIP_DB_PATH` |
+| Legacy JSON (deprecated) | `apps/api/data/db.json` or `apps/api/apps/api/data/db.json` | —                     |
 
 Both SQLite files are gitignored (`apps/api/data/*.db`, `apps/api/data/*.json`).
 
@@ -124,11 +124,11 @@ sqlite3 apps/api/data/sponsorship.db ".backup 'sponsorship-backup-$(date +%Y%m%d
 
 ### Recommended schedule
 
-| Environment | Suggestion |
-|-------------|------------|
-| Local dev | Optional — reset by deleting `data/*.db` |
-| Demo/staging | Copy before deployments |
-| Production | Automated daily backup of both DB files |
+| Environment  | Suggestion                               |
+| ------------ | ---------------------------------------- |
+| Local dev    | Optional — reset by deleting `data/*.db` |
+| Demo/staging | Copy before deployments                  |
+| Production   | Automated daily backup of both DB files  |
 
 ---
 
@@ -150,12 +150,12 @@ If the analytics DB is missing or corrupt, the API still starts but persistence 
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---------|--------------|-----|
-| Empty analytics after upgrade | New SQLite file; old data still in `db.json` | Run `npm run migrate:analytics` |
-| Data in wrong directory | Old cwd-relative paths | Set absolute `ANALYTICS_DB_PATH` |
-| `UNIQUE constraint failed` on tx hash | Duplicate payment proof | Expected — duplicate settlements are rejected |
-| Analytics reset on restart | `ANALYTICS_STORAGE=memory` | Switch to `sqlite` |
+| Symptom                               | Likely cause                                 | Fix                                           |
+| ------------------------------------- | -------------------------------------------- | --------------------------------------------- |
+| Empty analytics after upgrade         | New SQLite file; old data still in `db.json` | Run `npm run migrate:analytics`               |
+| Data in wrong directory               | Old cwd-relative paths                       | Set absolute `ANALYTICS_DB_PATH`              |
+| `UNIQUE constraint failed` on tx hash | Duplicate payment proof                      | Expected — duplicate settlements are rejected |
+| Analytics reset on restart            | `ANALYTICS_STORAGE=memory`                   | Switch to `sqlite`                            |
 
 ---
 
