@@ -1,10 +1,18 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { MAX_PAYMENT_ATTEMPTS, MAX_USAGE_EVENTS } from "./constants.js";
 import { createInMemoryStorageRepository } from "./memory.js";
+import { resolveApiDataPath } from "./paths.js";
 import {
   buildTestPaymentAttempt,
   buildTestUsageEvent
 } from "../../test/storage-test-helpers.js";
+
+describe("storage paths", () => {
+  it("resolves relative data paths from the API package root", () => {
+    expect(resolveApiDataPath("data/analytics.db")).toMatch(/apps\/api\/data\/analytics\.db$/);
+    expect(resolveApiDataPath("data/analytics.db")).not.toContain("/src/data/");
+  });
+});
 
 describe("InMemoryStorageRepository", () => {
   let repository = createInMemoryStorageRepository();
