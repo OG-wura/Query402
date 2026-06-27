@@ -119,10 +119,12 @@ Pricing and execution behavior:
 
 ## 6) Persistence and analytics
 
-Storage model (hackathon-first):
+Storage model:
 
-- JSON persistence in `apps/api/data/db.json`
-- tracks usage events, payment attempts, and metadata
+- **SQLite** analytics DB (`apps/api/data/analytics.db`) — usage events, payment attempts, idempotency
+- **SQLite** sponsorship DB (`apps/api/data/sponsorship.db`) — budget, nonce, sponsorship idempotency
+- Typed `StorageRepository` adapter with atomic payment+usage writes
+- See [docs/analytics-storage.md](./docs/analytics-storage.md) for backup, migration, and local dev
 
 Analytics endpoints:
 
@@ -142,13 +144,12 @@ This dual-path strategy keeps the demo resilient while preserving real-payment c
 
 Current MVP trade-offs:
 
-- JSON persistence instead of SQL for speed and clarity.
+- SQLite persistence with bounded retention (500 records per table).
 - AI-first provider generation with deterministic fallback for demo stability.
 - No user auth (out of scope for hackathon focus).
 
 Natural next steps:
 
-- Add SQLite + richer analytics queries
 - Expand real provider adapters
 - Add integration tests for facilitator/network checks
 - Add optional browser wallet UX (while retaining demo mode)

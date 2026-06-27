@@ -219,7 +219,7 @@ SQLite tables (see `apps/api/src/lib/sponsorship/store.ts`):
 - `sponsorship_nonces` — one row per consumed grant nonce
 - `idempotency_keys` — `Idempotency-Key` → cached response
 
-Analytics usage remains in `apps/api/data/db.json`; only sponsorship enforcement uses SQLite.
+Analytics usage is stored in `ANALYTICS_DB_PATH` (SQLite). Sponsorship enforcement uses a separate SQLite file at `SPONSORSHIP_DB_PATH`. See [analytics-storage.md](./analytics-storage.md) for backup and restore.
 
 **Backup**: Copy `SPONSORSHIP_DB_PATH` for audit; loss forces fail-closed `503` until restored or file recreated (budget counters reset).
 
