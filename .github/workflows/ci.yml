@@ -27,11 +27,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Restore Rollup native optional dependency
-        run: |
-          rollup_version="$(node -p "require('./node_modules/rollup/package.json').version")"
-          npm install --no-save --package-lock=false "@rollup/rollup-linux-x64-gnu@${rollup_version}"
-
       - name: Typecheck
         run: npm run typecheck
 
