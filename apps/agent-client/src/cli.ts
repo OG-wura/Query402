@@ -39,7 +39,6 @@ async function main() {
     process.exit(1);
   }
 
-
   const provider =
     readArg("--provider", args) ??
     (mode === "search" ? "search.basic" : mode === "news" ? "news.fast" : "scrape.page");

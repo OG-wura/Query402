@@ -7,6 +7,7 @@ import {
 import { ExactStellarScheme } from "@x402/stellar/exact/server";
 import type { NextFunction, Request, Response } from "express";
 import type { HTTPRequestContext } from "@x402/core/server";
+import type { PaymentPayload } from "@x402/core/types";
 import { getProviderById, protectedRouteBasePrices } from "./pricing.js";
 import { config } from "./config.js";
 import {
@@ -54,6 +55,14 @@ function resolveRoutePrice(context: HTTPRequestContext, mode: RouteMode) {
   }
 
   return formatUsdPrice(provider.priceUsd);
+}
+
+function clonePaymentPayload(paymentPayload: unknown): PaymentPayload | undefined {
+  if (!paymentPayload) {
+    return undefined;
+  }
+
+  return JSON.parse(JSON.stringify(paymentPayload)) as PaymentPayload;
 }
 
 function demoMode402Middleware(req: Request, res: Response, next: NextFunction) {
@@ -193,7 +202,7 @@ export function createX402Middleware() {
     const evidence = buildEvidenceFromHttpContext({
       context: httpContext,
       requirements: context.requirements,
-      paymentPayload: context.paymentPayload,
+      paymentPayload: clonePaymentPayload(context.paymentPayload),
       settleResult: context.result
     });
     setPaymentEvidence(req, evidence);

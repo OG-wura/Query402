@@ -20,7 +20,7 @@ function extractFreighterError(error: unknown) {
   return JSON.stringify(error);
 }
 
-function normalizeSignature(signedMessage: string | Buffer | null): string {
+function normalizeSignature(signedMessage: string | Uint8Array | null): string {
   if (!signedMessage) {
     throw new Error("Freighter did not return a message signature");
   }
@@ -29,7 +29,11 @@ function normalizeSignature(signedMessage: string | Buffer | null): string {
     return signedMessage;
   }
 
-  return Buffer.from(signedMessage).toString("base64");
+  let binary = "";
+  signedMessage.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary);
 }
 
 export async function fetchSponsorshipEnabled(apiBaseUrl: string): Promise<boolean> {
