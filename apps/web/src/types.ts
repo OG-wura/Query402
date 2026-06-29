@@ -35,6 +35,16 @@ export interface AnalyticsResponse {
   totalQueries: number;
   totalSpendUsd: number;
   spendByCategory: Record<QueryMode, number>;
+  executionSummary: {
+    totalExecutions: number;
+    liveExecutions: number;
+    fallbackExecutions: number;
+    unavailableExecutions: number;
+    timeoutExecutions: number;
+    circuitOpenExecutions: number;
+    fallbackByCategory: Record<QueryMode, number>;
+    fallbackReasonCounts: Record<string, number>;
+  };
   recentTransactions: Array<{
     id: string;
     amountUsd: number;
@@ -57,6 +67,15 @@ export interface AnalyticsResponse {
     latencyMs: number;
     paymentStatus: string;
     traceId: string;
+    execution?: {
+      providerId: string;
+      source: string;
+      usedFallback: boolean;
+      fallbackReason?: string;
+      latencyEstimateMs: number;
+      observedDurationMs: number;
+      circuitBreakerState?: string;
+    };
   }>;
 }
 
