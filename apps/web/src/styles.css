@@ -1306,7 +1306,77 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .action-row {
+.provider-badges {
+  margin-top: 0.4rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.badge {
+  border-radius: 999px;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.badge-latency {
+  border: 1px solid rgba(120, 152, 194, 0.25);
+  color: #9ec6ff;
+}
+
+.badge-reliability {
+  border: 1px solid rgba(120, 152, 194, 0.25);
+  color: #9ec6ff;
+}
+
+.badge-payment {
+  border: 1px solid rgba(120, 152, 194, 0.25);
+  color: #9ec6ff;
+}
+
+.badge-unknown {
+  border: 1px solid rgba(255, 150, 50, 0.4);
+  color: #ffb366;
+}
+
+.badge-latency-fast {
+  border-color: rgba(98, 228, 140, 0.4);
+  color: #9cffc3;
+}
+
+.badge-latency-standard {
+  border-color: rgba(98, 228, 255, 0.35);
+  color: #9ce4ff;
+}
+
+.badge-latency-slow {
+  border-color: rgba(255, 180, 50, 0.4);
+  color: #ffcc66;
+}
+
+.badge-reliability-live {
+  border-color: rgba(98, 228, 140, 0.4);
+  color: #9cffc3;
+}
+
+.badge-reliability-fallback {
+  border-color: rgba(180, 140, 255, 0.4);
+  color: #c9b0ff;
+}
+
+.badge-reliability-demo {
+  border-color: rgba(255, 150, 50, 0.4);
+  color: #ffb366;
+}
+
+.badge-payment-x402 {
+  border-color: rgba(98, 180, 255, 0.4);
+  color: #9cc9ff;
+}
+
+.action-row {
     flex-direction: column;
     align-items: flex-start;
   }

@@ -429,6 +429,23 @@ export default function ControlDeckPage() {
                       {provider.sourceType}
                     </span>
                   </div>
+                  {provider.slaBadges ? (
+                    <div className="provider-badges">
+                      <span className={`badge badge-latency badge-latency-${provider.slaBadges.latencyBand}`}>
+                        {provider.slaBadges.latencyLabel}
+                      </span>
+                      <span className={`badge badge-reliability badge-reliability-${provider.slaBadges.reliabilityBand}`}>
+                        {provider.slaBadges.reliabilityLabel}
+                      </span>
+                      <span className={`badge badge-payment badge-payment-${provider.slaBadges.paymentMode}`}>
+                        {provider.slaBadges.paymentLabel}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="provider-badges">
+                      <span className="badge badge-unknown">Not verified</span>
+                    </div>
+                  )}
                 </button>
               ))
             )}

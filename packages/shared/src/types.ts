@@ -11,6 +11,19 @@ export type ExecutionFallbackReason =
 export type CircuitBreakerState = "closed" | "half-open" | "open";
 export type PaymentSource = "sponsored" | "wallet" | "demo";
 
+export type LatencyBand = "fast" | "standard" | "slow";
+export type ReliabilityBand = "demo" | "fallback" | "live";
+export type PaymentMode = "demo" | "x402" | "sponsored";
+
+export interface SlaBadges {
+  latencyBand: LatencyBand;
+  latencyLabel: string;
+  reliabilityBand: ReliabilityBand;
+  reliabilityLabel: string;
+  paymentMode: PaymentMode;
+  paymentLabel: string;
+}
+
 export interface ProviderExecutionMetadata {
   providerId: string;
   source: SourceType;
@@ -31,6 +44,7 @@ export interface ProviderDefinition {
   qualityScore: number;
   sourceType: SourceType;
   enabled: boolean;
+  slaBadges: SlaBadges;
 }
 
 export interface ProviderResultItem {

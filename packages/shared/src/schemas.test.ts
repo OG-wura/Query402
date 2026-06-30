@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  latencyBandSchema,
   newsQuerySchema,
+  paymentModeSchema,
   providerCategorySchema,
   providerSchema,
   queryModeSchema,
+  reliabilityBandSchema,
   scrapeQuerySchema,
   searchQuerySchema,
   signedGrantSchema,
+  slaBadgesSchema,
   sponsorshipChallengeSchema,
   sponsorshipGrantSchema
 } from "./schemas.js";
@@ -20,7 +24,15 @@ const validProvider = {
   latencyEstimateMs: 700,
   qualityScore: 75,
   sourceType: "deterministic-fallback" as const,
-  enabled: true
+  enabled: true,
+  slaBadges: {
+    latencyBand: "fast" as const,
+    latencyLabel: "Fast response",
+    reliabilityBand: "fallback" as const,
+    reliabilityLabel: "Fallback cached",
+    paymentMode: "x402" as const,
+    paymentLabel: "Pay-per-query (x402)"
+  }
 };
 
 const validGrant = {
@@ -61,6 +73,60 @@ describe("providerSchema", () => {
   it("rejects invalid category and non-positive pricing", () => {
     expect(providerSchema.safeParse({ ...validProvider, category: "chat" }).success).toBe(false);
     expect(providerSchema.safeParse({ ...validProvider, priceUsd: 0 }).success).toBe(false);
+  });
+});
+
+describe("latencyBandSchema", () => {
+  it("accepts valid latency bands", () => {
+    expect(latencyBandSchema.parse("fast")).toBe("fast");
+    expect(latencyBandSchema.parse("standard")).toBe("standard");
+    expect(latencyBandSchema.parse("slow")).toBe("slow");
+  });
+
+  it("rejects invalid latency bands", () => {
+    expect(latencyBandSchema.safeParse("ultra").success).toBe(false);
+  });
+});
+
+describe("reliabilityBandSchema", () => {
+  it("accepts valid reliability bands", () => {
+    expect(reliabilityBandSchema.parse("demo")).toBe("demo");
+    expect(reliabilityBandSchema.parse("fallback")).toBe("fallback");
+    expect(reliabilityBandSchema.parse("live")).toBe("live");
+  });
+
+  it("rejects invalid reliability bands", () => {
+    expect(reliabilityBandSchema.safeParse("unknown").success).toBe(false);
+  });
+});
+
+describe("paymentModeSchema", () => {
+  it("accepts valid payment modes", () => {
+    expect(paymentModeSchema.parse("demo")).toBe("demo");
+    expect(paymentModeSchema.parse("x402")).toBe("x402");
+    expect(paymentModeSchema.parse("sponsored")).toBe("sponsored");
+  });
+
+  it("rejects invalid payment modes", () => {
+    expect(paymentModeSchema.safeParse("credit").success).toBe(false);
+  });
+});
+
+describe("slaBadgesSchema", () => {
+  it("accepts a complete SLA badges object", () => {
+    const badges = {
+      latencyBand: "fast",
+      latencyLabel: "Fast response",
+      reliabilityBand: "live",
+      reliabilityLabel: "Live results",
+      paymentMode: "x402",
+      paymentLabel: "Pay-per-query (x402)"
+    };
+    expect(slaBadgesSchema.parse(badges)).toEqual(badges);
+  });
+
+  it("rejects an SLA badges object with missing fields", () => {
+    expect(slaBadgesSchema.safeParse({ latencyBand: "fast" }).success).toBe(false);
   });
 });
 

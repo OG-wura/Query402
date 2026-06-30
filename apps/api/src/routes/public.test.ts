@@ -202,6 +202,41 @@ describe("public routes", () => {
     expect(catalogResponse.body.byCategory.scrape.length).toBeGreaterThan(0);
   });
 
+  it("every provider in catalog has slaBadges with correct shape", async () => {
+    const app = await createPublicApp();
+    const catalogResponse = await request(app).get("/api/catalog");
+
+    expect(catalogResponse.status).toBe(200);
+
+    for (const provider of catalogResponse.body.providers) {
+      expect(provider.slaBadges).toBeDefined();
+      expect(["fast", "standard", "slow"]).toContain(provider.slaBadges.latencyBand);
+      expect(["demo", "fallback", "live"]).toContain(provider.slaBadges.reliabilityBand);
+      expect(["demo", "x402", "sponsored"]).toContain(provider.slaBadges.paymentMode);
+      expect(typeof provider.slaBadges.latencyLabel).toBe("string");
+      expect(provider.slaBadges.latencyLabel.length).toBeGreaterThan(0);
+      expect(typeof provider.slaBadges.reliabilityLabel).toBe("string");
+      expect(provider.slaBadges.reliabilityLabel.length).toBeGreaterThan(0);
+      expect(typeof provider.slaBadges.paymentLabel).toBe("string");
+      expect(provider.slaBadges.paymentLabel.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("providers endpoint also exposes slaBadges", async () => {
+    const app = await createPublicApp();
+    const providersResponse = await request(app).get("/api/providers");
+
+    expect(providersResponse.status).toBe(200);
+    const provider = providersResponse.body.providers.find(
+      (p: { id: string }) => p.id === "search.basic"
+    );
+    expect(provider).toBeDefined();
+    expect(provider.slaBadges).toBeDefined();
+    expect(provider.slaBadges.latencyBand).toBe("fast");
+    expect(provider.slaBadges.reliabilityBand).toBe("fallback");
+    expect(provider.slaBadges.paymentMode).toBe("x402");
+  });
+
   it("returns safe default analytics shape for fresh storage", async () => {
     const app = await createPublicApp();
 

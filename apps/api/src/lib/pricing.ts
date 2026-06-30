@@ -1,4 +1,44 @@
-import type { ProviderDefinition } from "@query402/shared";
+import type { ProviderDefinition, SlaBadges } from "@query402/shared";
+
+function deriveSlaBadges(providerData: {
+  sourceType: ProviderDefinition["sourceType"];
+  latencyEstimateMs: number;
+}): SlaBadges {
+  const latencyBand =
+    providerData.latencyEstimateMs <= 800
+      ? "fast"
+      : providerData.latencyEstimateMs <= 1500
+        ? "standard"
+        : "slow";
+
+  const latencyLabels: Record<string, string> = {
+    fast: "Fast response",
+    standard: "Standard latency",
+    slow: "Higher latency"
+  };
+
+  const reliabilityBand =
+    providerData.sourceType === "live"
+      ? "live"
+      : providerData.sourceType === "deterministic-fallback"
+        ? "fallback"
+        : "demo";
+
+  const reliabilityLabels: Record<string, string> = {
+    live: "Live results",
+    fallback: "Fallback cached",
+    demo: "Demo reliability"
+  };
+
+  return {
+    latencyBand,
+    latencyLabel: latencyLabels[latencyBand],
+    reliabilityBand,
+    reliabilityLabel: reliabilityLabels[reliabilityBand],
+    paymentMode: "x402",
+    paymentLabel: "Pay-per-query (x402)"
+  };
+}
 
 export const providers: ProviderDefinition[] = [
   {
@@ -10,7 +50,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 1500,
     qualityScore: 99,
     sourceType: "live",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "live", latencyEstimateMs: 1500 })
   },
   {
     id: "search.basic",
@@ -21,7 +62,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 700,
     qualityScore: 75,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 700 })
   },
   {
     id: "search.pro",
@@ -32,7 +74,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 1100,
     qualityScore: 90,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 1100 })
   },
   {
     id: "news.fast",
@@ -43,7 +86,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 800,
     qualityScore: 72,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 800 })
   },
   {
     id: "news.deep",
@@ -54,7 +98,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 1400,
     qualityScore: 93,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 1400 })
   },
   {
     id: "scrape.page",
@@ -65,7 +110,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 1000,
     qualityScore: 70,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 1000 })
   },
   {
     id: "scrape.extract",
@@ -76,7 +122,8 @@ export const providers: ProviderDefinition[] = [
     latencyEstimateMs: 1700,
     qualityScore: 95,
     sourceType: "deterministic-fallback",
-    enabled: true
+    enabled: true,
+    slaBadges: deriveSlaBadges({ sourceType: "deterministic-fallback", latencyEstimateMs: 1700 })
   }
 ];
 

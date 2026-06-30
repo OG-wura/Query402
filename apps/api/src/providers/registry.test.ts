@@ -13,7 +13,15 @@ providers.push({
   latencyEstimateMs: 100,
   qualityScore: 90,
   sourceType: "live",
-  enabled: true
+  enabled: true,
+  slaBadges: {
+    latencyBand: "fast",
+    latencyLabel: "Fast response",
+    reliabilityBand: "live",
+    reliabilityLabel: "Live results",
+    paymentMode: "x402",
+    paymentLabel: "Pay-per-query (x402)"
+  }
 });
 providers.push({
   id: "test.search.deterministic",
@@ -24,7 +32,15 @@ providers.push({
   latencyEstimateMs: 100,
   qualityScore: 90,
   sourceType: "deterministic-fallback",
-  enabled: true
+  enabled: true,
+  slaBadges: {
+    latencyBand: "fast",
+    latencyLabel: "Fast response",
+    reliabilityBand: "fallback",
+    reliabilityLabel: "Fallback cached",
+    paymentMode: "x402",
+    paymentLabel: "Pay-per-query (x402)"
+  }
 });
 
 class MockAdapter implements ProviderAdapter {
