@@ -189,6 +189,20 @@ export interface SponsorshipPreview {
   reason?: string;
 }
 
+export interface DemoScenario {
+  id: string;
+  mode: QueryMode;
+  recommendedProvider: string;
+  sampleQuery: string;
+  expectedEvidenceFields: string[];
+  worksInDemoMode: boolean;
+  worksInRealMode: boolean;
+}
+
+export interface DemoScenarioManifest {
+  scenarios: DemoScenario[];
+}
+
 export interface SponsorshipPreviewRequest {
   wallet: string;
   mode: QueryMode;

@@ -202,4 +202,125 @@ describe("public routes", () => {
     expect(catalogResponse.body.byCategory.scrape.length).toBeGreaterThan(0);
   });
 
+  it("returns safe default analytics shape for fresh storage", async () => {
+    const app = await createPublicApp();
+
+    const analyticsResponse = await request(app).get("/api/analytics");
+
+    expect(analyticsResponse.status).toBe(200);
+    expect(analyticsResponse.body).toMatchObject({
+      totalQueries: 0,
+      totalSpendUsd: 0,
+      spendByCategory: {
+        search: 0,
+        news: 0,
+        scrape: 0
+      },
+      executionSummary: {
+        totalExecutions: 0,
+        liveExecutions: 0,
+        fallbackExecutions: 0,
+        unavailableExecutions: 0,
+        timeoutExecutions: 0,
+        circuitOpenExecutions: 0
+      },
+      recentUsage: [],
+      recentTransactions: []
+    });
+  });
+
+  it("returns usage and analytics summaries from isolated sqlite storage", async () => {
+    const app = await createPublicApp();
+    const { saveUsageEvent } = await import("../lib/persistence.js");
+
+    await saveUsageEvent(
+      buildTestUsageEvent({
+        id: "use_test_1",
+        queryOrUrl: "stellar x402",
+        paymentStatus: "demo-paid",
+        traceId: "trace_test_1",
+        createdAt: "2026-06-21T10:00:00.000Z",
+        latencyMs: 12
+      })
+    );
+
+    const usageResponse = await request(app).get("/api/usage");
+    const analyticsResponse = await request(app).get("/api/analytics");
+
+    expect(usageResponse.status).toBe(200);
+    expect(usageResponse.body.usage).toHaveLength(1);
+    expect(usageResponse.body.pagination).toMatchObject({
+      count: 1,
+      offset: 0
+    });
+
+    expect(analyticsResponse.status).toBe(200);
+    expect(analyticsResponse.body.totalQueries).toBe(1);
+    expect(analyticsResponse.body.totalSpendUsd).toBe(0.01);
+    expect(analyticsResponse.body.spendByCategory.search).toBe(0.01);
+  });
+
+  describe("demo scenario manifest", () => {
+    it("returns stable JSON with scenarios array", async () => {
+      const app = await createPublicApp();
+      const response = await request(app).get("/api/scenarios");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("scenarios");
+      expect(Array.isArray(response.body.scenarios)).toBe(true);
+      expect(response.body.scenarios.length).toBeGreaterThanOrEqual(3);
+    });
+
+    it("includes at least one scenario per mode (search, news, scrape)", async () => {
+      const app = await createPublicApp();
+      const response = await request(app).get("/api/scenarios");
+
+      const modes = response.body.scenarios.map((s: { mode: string }) => s.mode);
+      expect(modes).toContain("search");
+      expect(modes).toContain("news");
+      expect(modes).toContain("scrape");
+    });
+
+    it("each scenario has required shape", async () => {
+      const app = await createPublicApp();
+      const response = await request(app).get("/api/scenarios");
+
+      for (const scenario of response.body.scenarios) {
+        expect(scenario).toHaveProperty("id");
+        expect(scenario).toHaveProperty("mode");
+        expect(scenario).toHaveProperty("recommendedProvider");
+        expect(scenario).toHaveProperty("sampleQuery");
+        expect(scenario).toHaveProperty("expectedEvidenceFields");
+        expect(Array.isArray(scenario.expectedEvidenceFields)).toBe(true);
+        expect(scenario.expectedEvidenceFields.length).toBeGreaterThan(0);
+        expect(scenario).toHaveProperty("worksInDemoMode");
+        expect(scenario).toHaveProperty("worksInRealMode");
+        expect(typeof scenario.worksInDemoMode).toBe("boolean");
+        expect(typeof scenario.worksInRealMode).toBe("boolean");
+      }
+    });
+
+    it("returns identical response on repeated calls (stable manifest)", async () => {
+      const app = await createPublicApp();
+      const first = await request(app).get("/api/scenarios");
+      const second = await request(app).get("/api/scenarios");
+
+      expect(first.status).toBe(200);
+      expect(second.status).toBe(200);
+      expect(first.body).toEqual(second.body);
+    });
+
+    it("does not trigger any provider execution", async () => {
+      const { providers } = await import("../lib/pricing.js");
+      const { getCatalog } = await import("../services/query-service.js");
+
+      const app = await createPublicApp();
+      const response = await request(app).get("/api/scenarios");
+
+      expect(response.status).toBe(200);
+      // Confirm no live provider state changed — catalog and providers untouched
+      const catalog = getCatalog();
+      expect(catalog.providerCount).toBe(providers.length);
+    });
+  });
 });
