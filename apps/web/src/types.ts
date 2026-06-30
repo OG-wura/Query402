@@ -22,6 +22,7 @@ export interface PaymentEvidenceSummary {
 }
 
 export interface PaidQueryResponse {
+  traceId: string;
   payment: {
     network: string;
     facilitatorUrl: string;
