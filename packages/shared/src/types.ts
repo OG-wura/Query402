@@ -92,6 +92,8 @@ export interface UsageEvent {
   policyDecision?: string;
   paymentSource?: PaymentSource;
   sponsorPublicKey?: string;
+  priceOutlier?: boolean;
+  priceOutlierReason?: string;
 }
 
 export interface PaymentAttempt {

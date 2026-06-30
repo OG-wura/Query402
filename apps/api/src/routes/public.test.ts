@@ -353,7 +353,6 @@ describe("public routes", () => {
       const response = await request(app).get("/api/scenarios");
 
       expect(response.status).toBe(200);
-      // Confirm no live provider state changed — catalog and providers untouched
       const catalog = getCatalog();
       expect(catalog.providerCount).toBe(providers.length);
     });

@@ -22,6 +22,7 @@ export interface PaymentEvidenceSummary {
 }
 
 export interface PaidQueryResponse {
+  traceId: string;
   payment: {
     network: string;
     facilitatorUrl: string;
@@ -76,6 +77,8 @@ export interface AnalyticsResponse {
       observedDurationMs: number;
       circuitBreakerState?: string;
     };
+    priceOutlier?: boolean;
+    priceOutlierReason?: string;
   }>;
 }
 
