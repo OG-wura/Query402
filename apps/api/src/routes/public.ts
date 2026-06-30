@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import type { DemoScenarioManifest } from "@query402/shared";
 import { providers } from "../lib/pricing.js";
 import { getAnalyticsSummary, getUsageEvents } from "../lib/persistence.js";
 import { config, getConfigSnapshot } from "../lib/config.js";
@@ -81,4 +82,70 @@ publicRouter.get("/api/analytics", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+const DEMO_SCENARIO_MANIFEST: DemoScenarioManifest = {
+  scenarios: [
+    {
+      id: "search-provider-comparison",
+      mode: "search",
+      recommendedProvider: "search.basic",
+      sampleQuery: "latest stellar x402 updates",
+      expectedEvidenceFields: [
+        "providerId",
+        "providerName",
+        "priceUsd",
+        "latencyMs",
+        "timestamp",
+        "traceId",
+        "items",
+        "source",
+        "execution"
+      ],
+      worksInDemoMode: true,
+      worksInRealMode: true
+    },
+    {
+      id: "news-payment-flow",
+      mode: "news",
+      recommendedProvider: "news.fast",
+      sampleQuery: "stablecoin micropayments",
+      expectedEvidenceFields: [
+        "providerId",
+        "providerName",
+        "priceUsd",
+        "latencyMs",
+        "timestamp",
+        "traceId",
+        "items",
+        "source",
+        "execution"
+      ],
+      worksInDemoMode: true,
+      worksInRealMode: true
+    },
+    {
+      id: "scrape-result-display",
+      mode: "scrape",
+      recommendedProvider: "scrape.page",
+      sampleQuery: "https://developers.stellar.org",
+      expectedEvidenceFields: [
+        "providerId",
+        "providerName",
+        "priceUsd",
+        "latencyMs",
+        "timestamp",
+        "traceId",
+        "items",
+        "source",
+        "execution"
+      ],
+      worksInDemoMode: true,
+      worksInRealMode: true
+    }
+  ]
+};
+
+publicRouter.get("/api/scenarios", (_req, res) => {
+  res.json(DEMO_SCENARIO_MANIFEST);
 });

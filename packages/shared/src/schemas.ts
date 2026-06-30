@@ -69,6 +69,20 @@ export const sponsorshipPreviewRequestSchema = z.object({
 // IMPORTANT: This schema intentionally omits signature and nonce.
 // The preview endpoint MUST NOT surface a fully signed grant,
 // otherwise it would bypass the SEP-53 challenge/signature flow.
+export const demoScenarioSchema = z.object({
+  id: z.string().min(1),
+  mode: queryModeSchema,
+  recommendedProvider: z.string().min(1),
+  sampleQuery: z.string().min(1),
+  expectedEvidenceFields: z.array(z.string().min(1)).nonempty(),
+  worksInDemoMode: z.boolean(),
+  worksInRealMode: z.boolean()
+});
+
+export const demoScenarioManifestSchema = z.object({
+  scenarios: z.array(demoScenarioSchema)
+});
+
 export const sponsorshipPreviewResponseSchema = z.object({
   sponsorshipEnabled: z.boolean(),
   storageAvailable: z.boolean(),
